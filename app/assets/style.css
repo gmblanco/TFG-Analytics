@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* ── Base ───────────────────────────────────────────────────── */
+[data-testid="stAppViewContainer"] { background-color: var(--bg); }
+
+[data-testid="block-container"] {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    max-width: 100% !important;
+}
+
+html, body, [data-testid="stAppViewContainer"] * {
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+}
+
+h1, h2, h3 { font-family: 'Playfair Display', serif !important; }
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background-color: var(--surface);
+    border-right: 1px solid var(--border);
+    transition: width 0.25s ease;
+}
+
+[data-testid="stSidebar"] * {
+    color: var(--text2) !important;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px !important;
+}
+
+/* Ocultar texto nativo de Material Icons en botones sidebar */
+[data-testid="stSidebarCollapseButton"] span,
+[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="collapsedControl"] span,
+[data-testid="collapsedControl"] svg {
+    display: none !important;
+}
+
+[data-testid="stSidebarCollapseButton"] button::after {
+    content: "<";
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+[data-testid="collapsedControl"] button::after {
+    content: ">";
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+[data-testid="collapsedControl"] {
+    position: fixed !important;
+    left: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9999 !important;
+}
+
+/* ── Métricas ───────────────────────────────────────────────── */
+[data-testid="metric-container"] {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-testid="metric-container"]:hover {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent-a25);
+}
+
+[data-testid="stMetricLabel"] > div {
+    font-family: 'DM Mono', monospace !important;
+    font-size: 12px !important;
+    letter-spacing: 0.1em !important;
+    color: var(--muted) !important;
+    text-transform: uppercase !important;
+}
+
+[data-testid="stMetricValue"] > div {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 40px !important;
+    color: var(--text) !important;
+    line-height: 1.1 !important;
+}
+
+[data-testid="stMetricDelta"] > div {
+    font-size: 13px !important;
+    color: var(--muted) !important;
+}
+
+[data-testid="stMetricDelta"] svg { display: none !important; }
+
+/* ── Inputs ─────────────────────────────────────────────────── */
+[data-testid="stSelectbox"] > div,
+[data-testid="stTextInput"] > div > div {
+    background-color: var(--surface2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 6px !important;
+    color: var(--text) !important;
+    font-size: 15px !important;
+}
+
+/* ── Tabs ───────────────────────────────────────────────────── */
+[data-testid="stTabs"] button {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 15px !important;
+    color: var(--muted) !important;
+    transition: color 0.15s ease !important;
+}
+
+[data-testid="stTabs"] button[aria-selected="true"] {
+    color: var(--text) !important;
+    border-bottom: 2px solid var(--accent) !important;
+}
+
+/* ── Misc ───────────────────────────────────────────────────── */
+hr { border-color: var(--border) !important; }
+
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+[data-testid="stAlert"] {
+    background-color: var(--accent-a08) !important;
+    border: 1px solid var(--accent-a25) !important;
+    border-radius: 6px !important;
+    color: var(--accent) !important;
+    font-size: 15px !important;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 960px) {
+    [data-testid="stMetricValue"] > div { font-size: 30px !important; }
+}
+
+@media (max-width: 640px) {
+    [data-testid="column"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }
+    [data-testid="stMetricValue"] > div { font-size: 26px !important; }
+    h1 { font-size: 22px !important; }
+}
