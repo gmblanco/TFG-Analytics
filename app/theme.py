@@ -10,7 +10,7 @@ COLORS = {
     "border2_dark": "#3f3f46",
     "text_dark": "#fafafa",
     "text2_dark": "#d4d4d8",
-    "muted_dark": "#71717a",
+    "muted_dark": "#a1a1aa",
     "bg_light": "#f0f0ed",
     "surface_light": "#f7f7f5",
     "surface2_light": "#eaeae7",
@@ -58,12 +58,15 @@ PLOTLY_BASE_LAYOUT = {
 
 
 def init_page_config() -> None:
-    st.set_page_config(
-        page_title="Percepción Pública de la IA",
-        page_icon="A",
-        layout="wide",
-        initial_sidebar_state="expanded",
-    )
+    try:
+        st.set_page_config(
+            page_title="Percepción Pública de la IA",
+            page_icon="A",
+            layout="wide",
+            initial_sidebar_state="expanded",
+        )
+    except Exception:
+        pass  # ya fue llamado por app.py vía st.navigation
 
 
 def init_theme_state() -> None:
@@ -140,7 +143,7 @@ def inject_global_css(css_path: Path) -> None:
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
-def render_sidebar_header() -> None:
+def render_sidebar_brand() -> None:
     with st.sidebar:
         st.markdown(
             """
@@ -153,6 +156,9 @@ def render_sidebar_header() -> None:
             unsafe_allow_html=True,
         )
 
+
+def render_sidebar_toggle() -> None:
+    with st.sidebar:
         if "theme_mode_toggle" not in st.session_state:
             st.session_state.theme_mode_toggle = get_theme_mode() == "dark"
 
@@ -161,3 +167,8 @@ def render_sidebar_header() -> None:
             key="theme_mode_toggle",
             on_change=_on_theme_toggle,
         )
+
+
+def render_sidebar_header() -> None:
+    render_sidebar_brand()
+    render_sidebar_toggle()

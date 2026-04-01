@@ -5,6 +5,7 @@
 ========================= */
 html, body, [class*="css"] {
     font-family: 'Geist', sans-serif;
+    font-size: 16px;
 }
 
 html, body {
@@ -17,21 +18,11 @@ html, body {
     color: var(--text);
 }
 
-/* Ocultar header superior blanco y botones nativos feos */
 header[data-testid="stHeader"] {
     background: transparent !important;
-    height: 0 !important;
 }
 
-div[data-testid="stToolbar"] {
-    display: none !important;
-}
-
-button[kind="header"] {
-    display: none !important;
-}
-
-/* Menos hueco arriba */
+/* Menos hueco arriba en contenido principal */
 .block-container {
     padding-top: 2rem !important;
     padding-bottom: 2rem !important;
@@ -41,11 +32,12 @@ button[kind="header"] {
 }
 
 /* =========================
-   SIDEBAR
+   SIDEBAR LAYOUT
 ========================= */
 section[data-testid="stSidebar"] {
     background: var(--surface) !important;
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--border) !important;
+    width: 255px !important;
     min-width: 255px !important;
 }
 
@@ -53,16 +45,82 @@ section[data-testid="stSidebar"] > div {
     background: var(--surface) !important;
 }
 
-section[data-testid="stSidebar"] .block-container {
-    padding-top: 1.4rem !important;
-    padding-left: 1.2rem !important;
-    padding-right: 1.2rem !important;
-    padding-bottom: 1.4rem !important;
+/* Contenedor raíz real del sidebar */
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    min-height: 100vh !important;
+    padding: 1.2rem 1.2rem 1rem 1.2rem !important;
+    gap: 0 !important;
 }
 
-/* Branding custom */
+/* Hijos directos */
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] > div {
+    width: 100% !important;
+}
+
+/* Bloque custom (branding + toggle) */
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] > div:has(.sidebar-brand) {
+    order: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+/* Navegación nativa */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
+    order: 2 !important;
+    margin-top: 0.2rem !important;
+    margin-bottom: 0.6rem !important;
+    padding-top: 0 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stToggle"] {
+    position: static !important;
+    margin-top: 0.8rem !important;
+    margin-bottom: 0.8rem !important;
+    padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stToggle"]::after {
+    content: "";
+    display: block;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+button[data-testid="stSidebarCollapsedControl"] {
+    position: fixed !important;
+    top: 0.8rem !important;
+    left: 0.45rem !important;
+    width: 42px !important;
+    height: 42px !important;
+    z-index: 999999 !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+}
+
+button[data-testid="stSidebarCollapsedControl"]::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 56px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    z-index: -1;
+}
+
+/* =========================
+   BRANDING
+========================= */
 .sidebar-brand {
-    padding: 0.25rem 0 1rem 0;
+    padding: 0.15rem 0 0.9rem 0;
+    margin: 0 !important;
 }
 
 .logo-tag {
@@ -85,66 +143,16 @@ section[data-testid="stSidebar"] .block-container {
 .logo-sub {
     font-size: 12px;
     color: var(--muted);
-}
-
-.sidebar-divider {
-    border-top: 1px solid var(--border);
-    margin: 1.2rem 0 1rem 0;
-}
-
-.sidebar-footer-block p {
-    margin: 0 0 10px 0;
-    font-family: 'Geist Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-}
-
-/* Reordenar: brand encima del nav, nav debajo */
-section[data-testid="stSidebar"] > div:first-child > div:first-child,
-[data-testid="stSidebarContent"] {
-    display: flex !important;
-    flex-direction: column !important;
-}
-
-[data-testid="stSidebarNav"] {
-    order: 2 !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
-    order: 1 !important;
-}
-
-/* Switch de tema fijo al fondo */
-section[data-testid="stSidebar"] {
-    position: relative !important;
-}
-
-section[data-testid="stSidebar"] > div:first-child {
-    padding-bottom: 64px !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stToggle"] {
-    position: absolute !important;
-    bottom: 20px !important;
-    left: 1.2rem !important;
-    right: 1.2rem !important;
-    z-index: 5 !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stToggle"] label p {
-    font-size: 13px !important;
-    color: var(--muted) !important;
+    margin-bottom: 0.75rem;
 }
 
 /* =========================
    NAVEGACIÓN MULTIPAGE
 ========================= */
-/* Quitar label "Pages" o textos similares */
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] > div:first-child {
-    padding-top: 0.2rem;
+    padding-top: 0 !important;
 }
 
-/* Links del menú */
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a {
     background: transparent !important;
     color: var(--muted) !important;
@@ -156,13 +164,11 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a {
     border: 1px solid transparent !important;
 }
 
-/* Texto de los links */
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a span {
     color: var(--muted) !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
 }
 
-/* Hover */
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover {
     background: var(--surface2) !important;
     border-color: var(--border) !important;
@@ -172,7 +178,6 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover span {
     color: var(--text) !important;
 }
 
-/* Página activa */
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {
     background: rgba(245, 158, 11, 0.08) !important;
     border: 1px solid rgba(245, 158, 11, 0.22) !important;
@@ -183,7 +188,6 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="pa
     font-weight: 600 !important;
 }
 
-/* Iconos del nav */
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] svg {
     fill: var(--muted) !important;
 }
@@ -191,6 +195,94 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNav"] svg {
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] svg,
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover svg {
     fill: var(--text) !important;
+}
+
+/* =========================
+   TOGGLE TEMA
+========================= */
+/* Quitamos cualquier posicionamiento raro previo */
+section[data-testid="stSidebar"] [data-testid="stToggle"] {
+    position: static !important;
+    margin: 0.6rem 0 0 0 !important;
+    padding: 0 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stToggle"] label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stToggle"] label p {
+    font-size: 13px !important;
+    color: var(--muted) !important;
+}
+
+/* Separador debajo del toggle */
+section[data-testid="stSidebar"] [data-testid="stToggle"]::after {
+    content: "";
+    display: block;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Si Streamlit envuelve el toggle en un bloque propio, no metas margen extra */
+section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* =========================
+   CONTROLES SIDEBAR
+========================= */
+
+/* Botón para plegar sidebar abierto */
+button[data-testid="stSidebarCollapseButton"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: var(--text) !important;
+}
+
+/* Flecha corregida: cerrar = mirar a la izquierda */
+button[data-testid="stSidebarCollapseButton"] svg {
+    transform: rotate(180deg) !important;
+}
+
+/* Botón para desplegar sidebar cerrado */
+button[data-testid="stSidebarCollapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    top: 0.8rem !important;
+    left: 0.45rem !important;
+    width: 42px !important;
+    height: 42px !important;
+    z-index: 999999 !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    color: var(--text) !important;
+    box-shadow: none !important;
+}
+
+/* Flecha corregida: abrir = mirar a la derecha */
+button[data-testid="stSidebarCollapsedControl"] svg {
+    transform: rotate(0deg) !important;
+}
+
+/* Rail lateral visible al colapsar */
+button[data-testid="stSidebarCollapsedControl"]::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 56px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    z-index: -1;
 }
 
 /* =========================
@@ -219,14 +311,14 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover svg {
 }
 
 .section-subtitle {
-    font-size: 1.1rem;
-    line-height: 1.8;
+    font-size: 1.2rem;
+    line-height: 1.75;
     color: var(--text2);
-    max-width: 860px;
     margin-bottom: 24px;
+    white-space: normal;
 }
 
-/* Alertas/info de Streamlit */
+/* Alertas/info */
 div[data-testid="stAlert"] {
     background: var(--surface) !important;
     color: var(--text2) !important;
@@ -247,6 +339,8 @@ div[data-testid="stAlert"] {
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 18px 20px;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .kpi-label {
@@ -266,7 +360,7 @@ div[data-testid="stAlert"] {
 }
 
 .kpi-detail {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--muted);
     margin-top: 8px;
 }
@@ -277,7 +371,7 @@ div[data-testid="stAlert"] {
     border-radius: 10px;
     padding: 16px 18px;
     color: var(--text2);
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.7;
 }
 
@@ -304,7 +398,162 @@ p, li, label, div {
     color: inherit;
 }
 
-/* Responsive */
+/* =========================
+   COMPONENTES — PANORÁMICA
+========================= */
+
+/* KPI card: franja de color superior */
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+}
+
+.kpi-tw::before     { background: var(--tw) !important; }
+.kpi-yt::before     { background: var(--yt) !important; }
+.kpi-accent::before { background: var(--accent) !important; }
+.kpi-neg::before    { background: var(--neg) !important; }
+.kpi-pos::before    { background: var(--pos) !important; }
+
+.kpi-val-tw     { color: var(--tw) !important; }
+.kpi-val-yt     { color: var(--yt) !important; }
+.kpi-val-accent { color: var(--accent) !important; }
+.kpi-val-neg    { color: var(--neg) !important; }
+.kpi-val-pos    { color: var(--pos) !important; }
+
+/* Hypothesis cards */
+.hyp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    transition: border-color 0.2s ease;
+}
+
+.hyp-card:hover {
+    border-color: var(--border2);
+}
+
+.hyp-tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hyp-status {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-family: 'Geist Mono', monospace;
+    letter-spacing: 0.04em;
+}
+
+.hyp-status.confirmed {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--pos);
+}
+
+.hyp-status.partial {
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--accent);
+}
+
+.hyp-card h4 {
+    font-size: 20px;
+    color: var(--text);
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    font-family: 'Geist', sans-serif;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.hyp-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* Grid hipótesis */
+.hyp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.hyp-grid .hyp-card {
+    height: auto;
+}
+
+/* Nota metodológica */
+.method-note {
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    line-height: 1.7;
+    margin-top: 16px;
+}
+
+.method-note strong {
+    color: var(--text2);
+}
+
+.method-note code {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(245, 158, 11, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* Tarjetas de gráficos */
+div[data-testid="stBorderContainer"] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+    padding: 20px 20px 8px !important;
+}
+
+.chart-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--text);
+    margin: 0 0 2px 0;
+}
+
+.chart-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0 0 4px 0;
+}
+
+/* Plotly */
+div[data-testid="stPlotlyChart"] > div {
+    background: transparent !important;
+}
+
+/* Eliminar hueco extra entre título y chart */
+div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"]:has(.chart-title) {
+    margin-bottom: 0 !important;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 1100px) {
     .section-title {
         font-size: 2.8rem;
@@ -317,5 +566,9 @@ p, li, label, div {
     .block-container {
         padding-left: 1.4rem !important;
         padding-right: 1.4rem !important;
+    }
+
+    .hyp-grid {
+        grid-template-columns: 1fr;
     }
 }

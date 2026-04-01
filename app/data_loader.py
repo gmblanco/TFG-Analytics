@@ -21,6 +21,12 @@ def load_twitter_sentiment() -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
+def load_twitter_opinion() -> pd.DataFrame:
+    """Tweets de opinión (sin URL) con sector y sentimiento — 123 389 filas."""
+    return load_parquet("tweets_op_sectored.parquet")
+
+
+@st.cache_data(show_spinner=False)
 def load_youtube_sentiment() -> pd.DataFrame:
     candidates = [
         "youtube_sentiment_v2.parquet",
