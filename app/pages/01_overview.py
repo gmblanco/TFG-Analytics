@@ -27,17 +27,22 @@ def _sentiment_donut(counts: dict, center: str) -> go.Figure:
     fig = go.Figure(go.Pie(
         labels=_SENT_LABELS,
         values=vals,
-        hole=0.62,
+        hole=0.6,
         marker=dict(colors=_SENT_COLORS, line=dict(color="rgba(0,0,0,0)", width=0)),
         textinfo="percent",
-        textfont=dict(size=11, family="Geist Mono, monospace"),
+        textposition="inside",
+        textfont=dict(
+            size=14,
+            family="Geist Mono, monospace",
+            color="white",
+        ),
         direction="clockwise",
         sort=False,
     ))
 
     layout = {**PLOTLY_BASE_LAYOUT}
     layout.update(
-        height=240,
+        height=320,
         margin=dict(l=8, r=8, t=8, b=8),
         showlegend=True,
         legend=dict(
@@ -51,7 +56,7 @@ def _sentiment_donut(counts: dict, center: str) -> go.Figure:
         annotations=[dict(
             text=center,
             x=0.5, y=0.5,
-            font=dict(size=15, family="Instrument Serif, serif", color=tokens["text"]),
+            font=dict(size=18, family="Instrument Serif, serif", color=tokens["text"]),
             showarrow=False,
         )],
     )
@@ -93,7 +98,7 @@ def main() -> None:
         """
         <div class="page-wrap">
             <div class="section-tag">01 · Visión general</div>
-            <h1 class="section-title">Panorámica del corpus</h1>
+            <h1 class="section-title">Visión general del análisis</h1>
             <p class="section-subtitle">
                 Dos plataformas, nueve años de opinión pública sobre inteligencia artificial.
                 186&nbsp;378 textos analizados con el mismo modelo de NLP para garantizar comparabilidad.

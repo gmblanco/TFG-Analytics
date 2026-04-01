@@ -142,6 +142,39 @@ def inject_global_css(css_path: Path) -> None:
     st.markdown(token_css, unsafe_allow_html=True)
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
+    collapsed_rail = """
+<div id="sb-collapsed-rail" style="position:fixed;top:0;left:0;width:56px;height:100vh;
+z-index:99998;pointer-events:none;display:none;"></div>
+<script>
+(function(){
+    var rail = document.getElementById('sb-collapsed-rail');
+    function applyTheme(){
+        var s = getComputedStyle(document.documentElement);
+        rail.style.background = s.getPropertyValue('--surface').trim() || '#f7f7f5';
+        rail.style.borderRight = '1px solid ' + (s.getPropertyValue('--border').trim() || '#ddddd9');
+    }
+    function update(){
+        var sidebar = document.querySelector('section[data-testid="stSidebar"]');
+        var collapsed = sidebar ? sidebar.getBoundingClientRect().right < 50 : false;
+        rail.style.display = collapsed ? 'block' : 'none';
+        if(collapsed) applyTheme();
+        var btn = document.querySelector('button[data-testid="stSidebarCollapsedControl"]');
+        if(btn && collapsed){
+            btn.style.setProperty('position','fixed','important');
+            btn.style.setProperty('left','7px','important');
+            btn.style.setProperty('top','12px','important');
+            btn.style.setProperty('width','42px','important');
+            btn.style.setProperty('height','42px','important');
+            btn.style.setProperty('z-index','999999','important');
+        }
+    }
+    new MutationObserver(update).observe(document.body,{childList:true,subtree:true,attributes:true});
+    setInterval(update, 200);
+    update();
+})();
+</script>"""
+    st.markdown(collapsed_rail, unsafe_allow_html=True)
+
 
 def render_sidebar_brand() -> None:
     with st.sidebar:

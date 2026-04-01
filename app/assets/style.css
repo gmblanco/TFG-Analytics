@@ -1,11 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap');
 
+:root {
+    /* =========================
+       ESCALA TIPOGRÁFICA
+    ========================= */
+    --fs-base: 18px;
+
+    /* Sidebar */
+    --fs-sidebar-logo-tag: 9px;
+    --fs-sidebar-logo-title: 2rem;
+    --fs-sidebar-logo-sub: 12px;
+    --fs-sidebar-nav: 15px;
+    --fs-sidebar-toggle: 13px;
+
+    /* Header principal */
+    --fs-section-tag: 15px;
+    --fs-section-title: 3.6rem;
+    --fs-section-subtitle: 1.2rem;
+
+    /* Cards y bloques */
+    --fs-card-label: 11px;
+    --fs-card-value: 36px;
+    --fs-card-body-sm: 15px;
+    --fs-card-body: 16px;
+    --fs-card-body-lg: 17px;
+    --fs-card-title: 26px;
+
+    /* Auxiliares */
+    --fs-chart-title: 16px;
+    --fs-chart-desc: 12px;
+    --fs-hyp-tag: 10px;
+    --fs-hyp-status: 16px;
+    --fs-method-code: 13px;
+}
+
 /* =========================
    BASE
 ========================= */
 html, body, [class*="css"] {
     font-family: 'Geist', sans-serif;
-    font-size: 16px;
+    font-size: var(--fs-base);
 }
 
 html, body {
@@ -91,29 +125,6 @@ section[data-testid="stSidebar"] [data-testid="stToggle"]::after {
     border-top: 1px solid var(--border);
 }
 
-button[data-testid="stSidebarCollapsedControl"] {
-    position: fixed !important;
-    top: 0.8rem !important;
-    left: 0.45rem !important;
-    width: 42px !important;
-    height: 42px !important;
-    z-index: 999999 !important;
-    background: var(--surface) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 10px !important;
-}
-
-button[data-testid="stSidebarCollapsedControl"]::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 56px;
-    height: 100vh;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    z-index: -1;
-}
 
 /* =========================
    BRANDING
@@ -125,7 +136,7 @@ button[data-testid="stSidebarCollapsedControl"]::before {
 
 .logo-tag {
     font-family: 'Geist Mono', monospace;
-    font-size: 9px;
+    font-size: var(--fs-sidebar-logo-tag);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
@@ -134,14 +145,14 @@ button[data-testid="stSidebarCollapsedControl"]::before {
 
 .logo-title {
     font-family: 'Instrument Serif', serif;
-    font-size: 2rem;
+    font-size: var(--fs-sidebar-logo-title);
     line-height: 1.05;
     color: var(--text);
     margin-bottom: 4px;
 }
 
 .logo-sub {
-    font-size: 12px;
+    font-size: var(--fs-sidebar-logo-sub);
     color: var(--muted);
     margin-bottom: 0.75rem;
 }
@@ -166,7 +177,7 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a {
 
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a span {
     color: var(--muted) !important;
-    font-size: 15px !important;
+    font-size: var(--fs-sidebar-nav) !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover {
@@ -214,7 +225,7 @@ section[data-testid="stSidebar"] [data-testid="stToggle"] label {
 }
 
 section[data-testid="stSidebar"] [data-testid="stToggle"] label p {
-    font-size: 13px !important;
+    font-size: var(--fs-sidebar-toggle) !important;
     color: var(--muted) !important;
 }
 
@@ -249,40 +260,17 @@ button[data-testid="stSidebarCollapseButton"] svg {
     transform: rotate(180deg) !important;
 }
 
-/* Botón para desplegar sidebar cerrado */
+/* Botón para desplegar sidebar cerrado — posición gestionada por JS */
 button[data-testid="stSidebarCollapsedControl"] {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    position: fixed !important;
-    top: 0.8rem !important;
-    left: 0.45rem !important;
-    width: 42px !important;
-    height: 42px !important;
     z-index: 999999 !important;
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
     color: var(--text) !important;
     box-shadow: none !important;
-}
-
-/* Flecha corregida: abrir = mirar a la derecha */
-button[data-testid="stSidebarCollapsedControl"] svg {
-    transform: rotate(0deg) !important;
-}
-
-/* Rail lateral visible al colapsar */
-button[data-testid="stSidebarCollapsedControl"]::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 56px;
-    height: 100vh;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    z-index: -1;
 }
 
 /* =========================
@@ -295,7 +283,7 @@ button[data-testid="stSidebarCollapsedControl"]::before {
 
 .section-tag {
     font-family: 'Geist Mono', monospace;
-    font-size: 10px;
+    font-size: var(--fs-section-tag);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--accent);
@@ -304,14 +292,14 @@ button[data-testid="stSidebarCollapsedControl"]::before {
 
 .section-title {
     font-family: 'Instrument Serif', serif;
-    font-size: 3.6rem;
+    font-size: var(--fs-section-title);
     line-height: 1.05;
     color: var(--text);
     margin: 0 0 12px 0;
 }
 
 .section-subtitle {
-    font-size: 1.2rem;
+    font-size: var(--fs-section-subtitle);
     line-height: 1.75;
     color: var(--text2);
     margin-bottom: 24px;
@@ -345,24 +333,25 @@ div[data-testid="stAlert"] {
 
 .kpi-label {
     font-family: 'Geist Mono', monospace;
-    font-size: 10px;
+    font-size: var(--fs-card-label);
     letter-spacing: 0.10em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .kpi-value {
-    font-size: 28px;
+    font-size: var(--fs-card-value);
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.05;
     color: var(--text);
 }
 
 .kpi-detail {
-    font-size: 13px;
+    font-size: var(--fs-card-body-sm);
     color: var(--muted);
-    margin-top: 8px;
+    margin-top: 10px;
+    line-height: 1.45;
 }
 
 .insight-box {
@@ -371,7 +360,7 @@ div[data-testid="stAlert"] {
     border-radius: 10px;
     padding: 16px 18px;
     color: var(--text2);
-    font-size: 15px;
+    font-size: var(--fs-card-body-lg);
     line-height: 1.7;
 }
 
@@ -428,7 +417,7 @@ p, li, label, div {
 .hyp-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 17px;
     padding: 20px;
     height: 100%;
     transition: border-color 0.2s ease;
@@ -440,7 +429,7 @@ p, li, label, div {
 
 .hyp-tag {
     font-family: 'Geist Mono', monospace;
-    font-size: 10px;
+    font-size: var(--fs-hyp-tag);
     color: var(--accent);
     margin-bottom: 8px;
     display: flex;
@@ -449,7 +438,7 @@ p, li, label, div {
 }
 
 .hyp-status {
-    font-size: 9px;
+    font-size: var(--fs-hyp-status);
     padding: 2px 8px;
     border-radius: 10px;
     font-family: 'Geist Mono', monospace;
@@ -467,7 +456,7 @@ p, li, label, div {
 }
 
 .hyp-card h4 {
-    font-size: 20px;
+    font-size: var(--fs-card-title);
     color: var(--text);
     margin: 0 0 10px 0;
     font-weight: 700;
@@ -477,7 +466,7 @@ p, li, label, div {
 }
 
 .hyp-card p {
-    font-size: 14px;
+    font-size: var(--fs-card-body-lg);
     color: var(--muted);
     line-height: 1.65;
     margin: 0;
@@ -497,7 +486,7 @@ p, li, label, div {
 
 /* Nota metodológica */
 .method-note {
-    font-size: 13px;
+    font-size: var(--fs-card-body);
     color: var(--muted);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -513,7 +502,7 @@ p, li, label, div {
 
 .method-note code {
     font-family: 'Geist Mono', monospace;
-    font-size: 11px;
+    font-size: var(--fs-method-code);
     color: var(--accent);
     background: rgba(245, 158, 11, 0.08);
     padding: 1px 5px;
@@ -529,14 +518,17 @@ div[data-testid="stBorderContainer"] {
 }
 
 .chart-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 16px;
+    font-family: 'Geist', sans-serif;
+    font-size: var(--fs-card-title);
     color: var(--text);
-    margin: 0 0 2px 0;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 
 .chart-desc {
-    font-size: 12px;
+    font-size: var(--fs-chart-desc);
     color: var(--muted);
     margin: 0 0 4px 0;
 }
