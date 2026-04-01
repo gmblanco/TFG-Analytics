@@ -1,175 +1,163 @@
-# ============================================================
-# theme.py — Sistema de temas compartido
-# Importar en cada página: from theme import get_theme, inject_css
-# ============================================================
-
-import streamlit as st
-import pandas as pd
 from pathlib import Path
+import streamlit as st
 
-# ── Diccionarios de tema ──────────────────────────────────────
-DARK_THEME = {
-    "bg":              "#0d0f14",
-    "surface":         "#151820",
-    "surface2":        "#1c2030",
-    "border":          "#2e3446",
-    "text":            "#f0ede6",
-    "text2":           "#e0ddd6",
-    "muted":           "#b0b8c8",
-    "accent":          "#d4a843",
-    "accent_alpha08":  "rgba(212,168,67,0.08)",
-    "accent_alpha25":  "rgba(212,168,67,0.25)",
-    "accent_alpha60":  "rgba(212,168,67,0.6)",
-    "negative":        "#e05252",
-    "negative_faded":  "rgba(224,82,82,0.5)",
-    "neutral":         "#8896aa",
-    "positive":        "#4db87a",
-    "twitter":         "#4a9edd",
-    "youtube":         "#e05252",
+
+COLORS = {
+    "bg_dark": "#09090b",
+    "surface_dark": "#111114",
+    "surface2_dark": "#18181b",
+    "border_dark": "#27272a",
+    "border2_dark": "#3f3f46",
+    "text_dark": "#fafafa",
+    "text2_dark": "#d4d4d8",
+    "muted_dark": "#71717a",
+    "bg_light": "#f0f0ed",
+    "surface_light": "#f7f7f5",
+    "surface2_light": "#eaeae7",
+    "border_light": "#ddddd9",
+    "border2_light": "#ccccc8",
+    "text_light": "#0a0a0a",
+    "text2_light": "#3f3f46",
+    "muted_light": "#71717a",
+    "accent": "#f59e0b",
+    "accent2": "#fbbf24",
+    "negative": "#ef4444",
+    "neutral": "#94a3b8",
+    "positive": "#22c55e",
+    "twitter": "#60a5fa",
+    "youtube": "#f87171",
 }
 
-LIGHT_THEME = {
-    "bg":              "#f4f3ef",
-    "surface":         "#ffffff",
-    "surface2":        "#eceae4",
-    "border":          "#d0cfc8",
-    "text":            "#1c1c2e",
-    "text2":           "#2e2e3e",
-    "muted":           "#6b7280",
-    "accent":          "#b8860b",
-    "accent_alpha08":  "rgba(184,134,11,0.08)",
-    "accent_alpha25":  "rgba(184,134,11,0.25)",
-    "accent_alpha60":  "rgba(184,134,11,0.6)",
-    "negative":        "#c0392b",
-    "negative_faded":  "rgba(192,57,43,0.4)",
-    "neutral":         "#7f8c9a",
-    "positive":        "#27ae60",
-    "twitter":         "#2980b9",
-    "youtube":         "#c0392b",
+SENTIMENT_ORDER = ["negative", "neutral", "positive"]
+SENTIMENT_LABELS_ES = {
+    "negative": "Negativo",
+    "neutral": "Neutral",
+    "positive": "Positivo",
+}
+PLATFORM_LABELS_ES = {
+    "twitter": "Twitter",
+    "youtube": "YouTube",
+}
+SECTOR_LABELS_ES = {
+    "education": "Educación",
+    "employment": "Empleo",
 }
 
-_CSS_PATH = Path(__file__).parent / "assets" / "style.css"
+PLOTLY_BASE_LAYOUT = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "margin": {"l": 20, "r": 20, "t": 30, "b": 20},
+    "legend": {
+        "orientation": "h",
+        "yanchor": "bottom",
+        "y": -0.25,
+        "xanchor": "center",
+        "x": 0.5,
+    },
+}
 
 
-def setup_theme() -> dict:
-    """Renderiza el toggle en el sidebar, aplica el CSS y devuelve T.
-    Llamar una sola vez al inicio de cada página."""
-    if "dark_mode" not in st.session_state:
-        st.session_state.dark_mode = True
-
-    with st.sidebar:
-        # Leer y escribir session_state explícitamente para que persista entre páginas
-        st.session_state.dark_mode = st.toggle(
-            "Modo oscuro",
-            value=st.session_state.dark_mode,
-        )
-        st.divider()
-
-    T = DARK_THEME if st.session_state.dark_mode else LIGHT_THEME
-    inject_css(T)
-    return T
-
-
-def inject_css(T: dict) -> None:
-    """Inyecta las variables CSS del tema + el stylesheet compartido en un único bloque."""
-    with open(_CSS_PATH, encoding="utf-8") as f:
-        static_css = f.read()
-
-    st.markdown(f"""<style>
-:root {{
-    --bg:             {T["bg"]};
-    --surface:        {T["surface"]};
-    --surface2:       {T["surface2"]};
-    --border:         {T["border"]};
-    --text:           {T["text"]};
-    --text2:          {T["text2"]};
-    --muted:          {T["muted"]};
-    --accent:         {T["accent"]};
-    --accent-a08:     {T["accent_alpha08"]};
-    --accent-a25:     {T["accent_alpha25"]};
-    --accent-a60:     {T["accent_alpha60"]};
-    --negative:       {T["negative"]};
-    --negative-faded: {T["negative_faded"]};
-    --neutral:        {T["neutral"]};
-    --positive:       {T["positive"]};
-    --twitter:        {T["twitter"]};
-    --youtube:        {T["youtube"]};
-}}
-{static_css}
-</style>""", unsafe_allow_html=True)
-
-
-def make_plotly_layout(T: dict) -> dict:
-    """Base layout de Plotly consistente con el tema activo."""
-    return dict(
-        paper_bgcolor=T["surface"],
-        plot_bgcolor=T["surface"],
-        font=dict(family="DM Mono, monospace", color=T["muted"], size=14),
-        xaxis=dict(gridcolor=T["border"], linecolor=T["border"],
-                   tickfont=dict(size=13, color=T["muted"])),
-        yaxis=dict(gridcolor=T["border"], linecolor=T["border"],
-                   tickfont=dict(size=13, color=T["muted"])),
-        hoverlabel=dict(bgcolor=T["surface"], font_size=14,
-                        font_family="DM Mono, monospace"),
+def init_page_config() -> None:
+    st.set_page_config(
+        page_title="Percepción Pública de la IA",
+        page_icon="A",
+        layout="wide",
+        initial_sidebar_state="expanded",
     )
 
 
-# ── Hitos compartidos ─────────────────────────────────────────
-MILESTONES = [
-    ("2020-06", "GPT-3"),
-    ("2021-01", "DALL-E"),
-    ("2022-11", "ChatGPT"),
-    ("2023-03", "GPT-4"),
-    ("2023-12", "Gemini"),
-    ("2024-03", "EU AI Act"),
-]
+def init_theme_state() -> None:
+    if "theme_mode" not in st.session_state:
+        st.session_state.theme_mode = "dark"
 
 
-def add_milestone_lines(fig, x_min, x_max, T: dict,
-                        line_color: str = None, text_color: str = None,
-                        show_legend: bool = False):
-    """Añade líneas verticales de hitos a una figura Plotly.
+def get_theme_mode() -> str:
+    return st.session_state.get("theme_mode", "dark")
 
-    Args:
-        line_color: color de la línea (por defecto accent_alpha60 del tema).
-        text_color: color del texto de la anotación (por defecto accent del tema).
-        show_legend: si True, añade una anotación compacta en la esquina
-                     superior derecha con la lista de hitos.
+
+def toggle_theme() -> None:
+    st.session_state.theme_mode = "light" if get_theme_mode() == "dark" else "dark"
+
+
+def _on_theme_toggle() -> None:
+    st.session_state.theme_mode = "dark" if st.session_state.theme_mode_toggle else "light"
+
+
+def get_theme_tokens() -> dict:
+    mode = get_theme_mode()
+
+    if mode == "dark":
+        return {
+            "bg": COLORS["bg_dark"],
+            "surface": COLORS["surface_dark"],
+            "surface2": COLORS["surface2_dark"],
+            "border": COLORS["border_dark"],
+            "border2": COLORS["border2_dark"],
+            "text": COLORS["text_dark"],
+            "text2": COLORS["text2_dark"],
+            "muted": COLORS["muted_dark"],
+        }
+
+    return {
+        "bg": COLORS["bg_light"],
+        "surface": COLORS["surface_light"],
+        "surface2": COLORS["surface2_light"],
+        "border": COLORS["border_light"],
+        "border2": COLORS["border2_light"],
+        "text": COLORS["text_light"],
+        "text2": COLORS["text2_light"],
+        "muted": COLORS["muted_light"],
+    }
+
+
+def inject_global_css(css_path: Path) -> None:
+    tokens = get_theme_tokens()
+    css = css_path.read_text(encoding="utf-8")
+
+    token_css = f"""
+    <style>
+    :root {{
+        --bg: {tokens["bg"]};
+        --surface: {tokens["surface"]};
+        --surface2: {tokens["surface2"]};
+        --border: {tokens["border"]};
+        --border2: {tokens["border2"]};
+        --text: {tokens["text"]};
+        --text2: {tokens["text2"]};
+        --muted: {tokens["muted"]};
+        --accent: {COLORS["accent"]};
+        --accent2: {COLORS["accent2"]};
+        --neg: {COLORS["negative"]};
+        --neu: {COLORS["neutral"]};
+        --pos: {COLORS["positive"]};
+        --tw: {COLORS["twitter"]};
+        --yt: {COLORS["youtube"]};
+    }}
+    </style>
     """
-    lc = line_color or T["accent_alpha60"]
-    tc = text_color or T["accent"]
 
-    positions = ["top left", "top right"]
-    visible = [(ms, lbl) for ms, lbl in MILESTONES
-               if x_min <= pd.Timestamp(ms) <= x_max]
+    st.markdown(token_css, unsafe_allow_html=True)
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
-    for i, (month_str, label) in enumerate(visible):
-        ts = pd.Timestamp(month_str)
-        fig.add_vline(
-            x=ts.timestamp() * 1000,
-            line_width=1,
-            line_dash="dot",
-            line_color=lc,
-            annotation_text=label,
-            annotation_position=positions[i % 2],
-            annotation_font=dict(size=14, color=tc,
-                                 family="DM Mono, monospace"),
+
+def render_sidebar_header() -> None:
+    with st.sidebar:
+        st.markdown(
+            """
+            <div class="sidebar-brand">
+                <div class="logo-tag">TFG · 2025-2026</div>
+                <div class="logo-title">Percepción de la IA</div>
+                <div class="logo-sub">Twitter & YouTube · NLP</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-    if show_legend:
-        lines = [f"● {lbl} &nbsp;{mo}" for mo, lbl in MILESTONES]
-        fig.add_annotation(
-            xref="paper", yref="paper",
-            x=0.99, y=0.99,
-            xanchor="right", yanchor="top",
-            text="<br>".join(lines),
-            showarrow=False,
-            font=dict(size=10, color=tc, family="DM Mono, monospace"),
-            align="right",
-            bgcolor=T["surface"],
-            bordercolor=T["border"],
-            borderwidth=1,
-            borderpad=8,
-            opacity=0.88,
+        if "theme_mode_toggle" not in st.session_state:
+            st.session_state.theme_mode_toggle = get_theme_mode() == "dark"
+
+        st.toggle(
+            "Modo oscuro",
+            key="theme_mode_toggle",
+            on_change=_on_theme_toggle,
         )
-    return fig

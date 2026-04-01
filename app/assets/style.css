@@ -1,154 +1,321 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap');
 
-/* ── Base ───────────────────────────────────────────────────── */
-[data-testid="stAppViewContainer"] { background-color: var(--bg); }
-
-[data-testid="block-container"] {
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
-    max-width: 100% !important;
+/* =========================
+   BASE
+========================= */
+html, body, [class*="css"] {
+    font-family: 'Geist', sans-serif;
 }
 
-html, body, [data-testid="stAppViewContainer"] * {
+html, body {
+    background: var(--bg);
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
 }
 
-h1, h2, h3 { font-family: 'Playfair Display', serif !important; }
-
-/* ── Sidebar ────────────────────────────────────────────────── */
-[data-testid="stSidebar"] {
-    background-color: var(--surface);
-    border-right: 1px solid var(--border);
-    transition: width 0.25s ease;
+.stApp {
+    background: var(--bg);
+    color: var(--text);
 }
 
-[data-testid="stSidebar"] * {
-    color: var(--text2) !important;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px !important;
+/* Ocultar header superior blanco y botones nativos feos */
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    height: 0 !important;
 }
 
-/* Ocultar texto nativo de Material Icons en botones sidebar */
-[data-testid="stSidebarCollapseButton"] span,
-[data-testid="stSidebarCollapseButton"] svg,
-[data-testid="collapsedControl"] span,
-[data-testid="collapsedControl"] svg {
+div[data-testid="stToolbar"] {
     display: none !important;
 }
 
-[data-testid="stSidebarCollapseButton"] button::after {
-    content: "<";
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    font-weight: 600;
+button[kind="header"] {
+    display: none !important;
+}
+
+/* Menos hueco arriba */
+.block-container {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+    max-width: 1400px !important;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+section[data-testid="stSidebar"] {
+    background: var(--surface) !important;
+    border-right: 1px solid var(--border);
+    min-width: 255px !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    background: var(--surface) !important;
+}
+
+section[data-testid="stSidebar"] .block-container {
+    padding-top: 1.4rem !important;
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+    padding-bottom: 1.4rem !important;
+}
+
+/* Branding custom */
+.sidebar-brand {
+    padding: 0.25rem 0 1rem 0;
+}
+
+.logo-tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.logo-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2rem;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.logo-sub {
+    font-size: 12px;
     color: var(--muted);
 }
 
-[data-testid="collapsedControl"] button::after {
-    content: ">";
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    font-weight: 600;
+.sidebar-divider {
+    border-top: 1px solid var(--border);
+    margin: 1.2rem 0 1rem 0;
+}
+
+.sidebar-footer-block p {
+    margin: 0 0 10px 0;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
     color: var(--muted);
 }
 
-[data-testid="collapsedControl"] {
-    position: fixed !important;
-    left: 8px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 9999 !important;
+/* Reordenar: brand encima del nav, nav debajo */
+section[data-testid="stSidebar"] > div:first-child > div:first-child,
+[data-testid="stSidebarContent"] {
+    display: flex !important;
+    flex-direction: column !important;
 }
 
-/* ── Métricas ───────────────────────────────────────────────── */
-[data-testid="metric-container"] {
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    overflow: hidden;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+[data-testid="stSidebarNav"] {
+    order: 2 !important;
 }
 
-[data-testid="metric-container"]:hover {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 1px var(--accent-a25);
+section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
+    order: 1 !important;
 }
 
-[data-testid="stMetricLabel"] > div {
-    font-family: 'DM Mono', monospace !important;
-    font-size: 12px !important;
-    letter-spacing: 0.1em !important;
-    color: var(--muted) !important;
-    text-transform: uppercase !important;
+/* Switch de tema fijo al fondo */
+section[data-testid="stSidebar"] {
+    position: relative !important;
 }
 
-[data-testid="stMetricValue"] > div {
-    font-family: 'Playfair Display', serif !important;
-    font-size: 40px !important;
-    color: var(--text) !important;
-    line-height: 1.1 !important;
+section[data-testid="stSidebar"] > div:first-child {
+    padding-bottom: 64px !important;
 }
 
-[data-testid="stMetricDelta"] > div {
+section[data-testid="stSidebar"] [data-testid="stToggle"] {
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 1.2rem !important;
+    right: 1.2rem !important;
+    z-index: 5 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stToggle"] label p {
     font-size: 13px !important;
     color: var(--muted) !important;
 }
 
-[data-testid="stMetricDelta"] svg { display: none !important; }
-
-/* ── Inputs ─────────────────────────────────────────────────── */
-[data-testid="stSelectbox"] > div,
-[data-testid="stTextInput"] > div > div {
-    background-color: var(--surface2) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 6px !important;
-    color: var(--text) !important;
-    font-size: 15px !important;
+/* =========================
+   NAVEGACIÓN MULTIPAGE
+========================= */
+/* Quitar label "Pages" o textos similares */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] > div:first-child {
+    padding-top: 0.2rem;
 }
 
-/* ── Tabs ───────────────────────────────────────────────────── */
-[data-testid="stTabs"] button {
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 15px !important;
+/* Links del menú */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a {
+    background: transparent !important;
     color: var(--muted) !important;
-    transition: color 0.15s ease !important;
+    border-radius: 10px !important;
+    padding: 0.55rem 0.7rem !important;
+    margin: 0.18rem 0 !important;
+    transition: 0.2s ease;
+    text-decoration: none !important;
+    border: 1px solid transparent !important;
 }
 
-[data-testid="stTabs"] button[aria-selected="true"] {
+/* Texto de los links */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a span {
+    color: var(--muted) !important;
+    font-size: 14px !important;
+}
+
+/* Hover */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover {
+    background: var(--surface2) !important;
+    border-color: var(--border) !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover span {
     color: var(--text) !important;
-    border-bottom: 2px solid var(--accent) !important;
 }
 
-/* ── Misc ───────────────────────────────────────────────────── */
-hr { border-color: var(--border) !important; }
-
-::-webkit-scrollbar       { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-[data-testid="stAlert"] {
-    background-color: var(--accent-a08) !important;
-    border: 1px solid var(--accent-a25) !important;
-    border-radius: 6px !important;
-    color: var(--accent) !important;
-    font-size: 15px !important;
+/* Página activa */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {
+    background: rgba(245, 158, 11, 0.08) !important;
+    border: 1px solid rgba(245, 158, 11, 0.22) !important;
 }
 
-/* ── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 960px) {
-    [data-testid="stMetricValue"] > div { font-size: 30px !important; }
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] span {
+    color: var(--text) !important;
+    font-weight: 600 !important;
 }
 
-@media (max-width: 640px) {
-    [data-testid="column"] {
-        width: 100% !important;
-        flex: 1 1 100% !important;
-        min-width: 100% !important;
+/* Iconos del nav */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] svg {
+    fill: var(--muted) !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] svg,
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a:hover svg {
+    fill: var(--text) !important;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+.page-wrap {
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.section-tag {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 3.6rem;
+    line-height: 1.05;
+    color: var(--text);
+    margin: 0 0 12px 0;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text2);
+    max-width: 860px;
+    margin-bottom: 24px;
+}
+
+/* Alertas/info de Streamlit */
+div[data-testid="stAlert"] {
+    background: var(--surface) !important;
+    color: var(--text2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+}
+
+/* Bloques */
+.block-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.kpi-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+}
+
+.kpi-detail {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
+.insight-box {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.16);
+    border-radius: 10px;
+    padding: 16px 18px;
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.insight-box strong {
+    color: var(--accent);
+}
+
+/* Dataframe y métricas */
+div[data-testid="stMetric"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+div[data-testid="stDataFrame"] {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Texto general */
+p, li, label, div {
+    color: inherit;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .section-title {
+        font-size: 2.8rem;
     }
-    [data-testid="stMetricValue"] > div { font-size: 26px !important; }
-    h1 { font-size: 22px !important; }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    .block-container {
+        padding-left: 1.4rem !important;
+        padding-right: 1.4rem !important;
+    }
 }
