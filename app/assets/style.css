@@ -511,10 +511,22 @@ p, li, label, div {
 
 /* Tarjetas de gráficos */
 div[data-testid="stBorderContainer"] {
-    background: var(--surface) !important;
+    background-color: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 12px !important;
     padding: 20px 20px 8px !important;
+}
+
+div[data-testid="stBorderContainer"] > div {
+    background-color: var(--surface) !important;
+}
+
+div[data-testid="stBorderContainer"] div[data-testid="stPlotlyChart"] {
+    background-color: transparent !important;
+}
+
+div[data-testid="stBorderContainer"] div[data-testid="stPlotlyChart"] > div {
+    background-color: transparent !important;
 }
 
 .chart-title {
