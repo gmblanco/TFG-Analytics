@@ -486,7 +486,7 @@ def main() -> None:
     st.markdown(
         """
         <div class="page-wrap">
-            <div class="section-tag">03 · Análisis sectorial · H2</div>
+            <div class="section-tag">03 · ANÁLISIS SECTORIAL</div>
             <h1 class="section-title">Miedos y esperanzas</h1>
             <p class="section-subtitle">
                 El impacto percibido de la IA no es homogéneo. El sector del empleo concentra

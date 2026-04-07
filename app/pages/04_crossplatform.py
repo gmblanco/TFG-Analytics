@@ -582,7 +582,7 @@ def main() -> None:
     st.markdown(
         """
         <div class="page-wrap">
-            <div class="section-tag">04 · Comparativa cross-platform · H3</div>
+            <div class="section-tag">04 · COMPARATIVA CROSS-PLATFORM</div>
             <h1 class="section-title">Twitter vs YouTube</h1>
             <p class="section-subtitle">
                 ¿Influye la plataforma en cómo se percibe la IA? Comparación directa entre

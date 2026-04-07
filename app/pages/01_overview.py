@@ -56,7 +56,7 @@ def _sentiment_donut(counts: dict, center: str) -> go.Figure:
         annotations=[dict(
             text=center,
             x=0.5, y=0.5,
-            font=dict(size=18, family="Instrument Serif, serif", color=tokens["text"]),
+            font=dict(size=18, family="Space Grotesk, sans-serif", color=tokens["text"]),
             showarrow=False,
         )],
     )

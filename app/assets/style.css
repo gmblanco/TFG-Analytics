@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
 :root {
     /* =========================
@@ -7,14 +7,14 @@
     --fs-base: 18px;
 
     /* Sidebar */
-    --fs-sidebar-logo-tag: 9px;
-    --fs-sidebar-logo-title: 2rem;
+    --fs-sidebar-logo-tag: 11px;
+    --fs-sidebar-logo-title: 1.35rem;
     --fs-sidebar-logo-sub: 12px;
     --fs-sidebar-nav: 15px;
     --fs-sidebar-toggle: 13px;
 
     /* Header principal */
-    --fs-section-tag: 15px;
+    --fs-section-tag: 17px;
     --fs-section-title: 3.6rem;
     --fs-section-subtitle: 1.2rem;
 
@@ -40,6 +40,14 @@
 html, body, [class*="css"] {
     font-family: 'Geist', sans-serif;
     font-size: var(--fs-base);
+}
+
+/* Títulos de página nativos de Streamlit (st.title, st.header) */
+div[data-testid="stHeadingWithActionElements"] h1,
+section.main h1 {
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
 }
 
 html, body {
@@ -95,6 +103,15 @@ section[data-testid="stSidebar"] [data-testid="stSidebarContent"] > div {
     width: 100% !important;
 }
 
+/* Evitar corte de palabras en el branding del sidebar */
+.sidebar-brand,
+.sidebar-brand *,
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] .logo-title {
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+}
+
 /* Bloque custom (branding + toggle) */
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] > div:has(.sidebar-brand) {
     order: 1 !important;
@@ -132,6 +149,7 @@ section[data-testid="stSidebar"] [data-testid="stToggle"]::after {
 .sidebar-brand {
     padding: 0.15rem 0 0.9rem 0;
     margin: 0 !important;
+    text-align: center;
 }
 
 .logo-tag {
@@ -139,16 +157,20 @@ section[data-testid="stSidebar"] [data-testid="stToggle"]::after {
     font-size: var(--fs-sidebar-logo-tag);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--tag-color);
     margin-bottom: 4px;
 }
 
 .logo-title {
-    font-family: 'Instrument Serif', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: var(--fs-sidebar-logo-title);
-    line-height: 1.05;
+    font-weight: 700;
+    line-height: 1.25;
     color: var(--text);
     margin-bottom: 4px;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
 }
 
 .logo-sub {
@@ -226,7 +248,7 @@ section[data-testid="stSidebar"] [data-testid="stToggle"] label {
 
 section[data-testid="stSidebar"] [data-testid="stToggle"] label p {
     font-size: var(--fs-sidebar-toggle) !important;
-    color: var(--muted) !important;
+    color: var(--text2) !important;
 }
 
 /* Separador debajo del toggle */
@@ -286,13 +308,14 @@ button[data-testid="stSidebarCollapsedControl"] {
     font-size: var(--fs-section-tag);
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--tag-color);
     margin-bottom: 10px;
 }
 
 .section-title {
-    font-family: 'Instrument Serif', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: var(--fs-section-title);
+    font-weight: 700;
     line-height: 1.05;
     color: var(--text);
     margin: 0 0 12px 0;
@@ -355,8 +378,8 @@ div[data-testid="stAlert"] {
 }
 
 .insight-box {
-    background: rgba(245, 158, 11, 0.05);
-    border: 1px solid rgba(245, 158, 11, 0.16);
+    background: var(--insight-bg);
+    border: 1px solid var(--insight-border);
     border-radius: 10px;
     padding: 16px 18px;
     color: var(--text2);
@@ -467,7 +490,7 @@ p, li, label, div {
 
 .hyp-card p {
     font-size: var(--fs-card-body-lg);
-    color: var(--muted);
+    color: var(--text2);
     line-height: 1.65;
     margin: 0;
 }
@@ -543,6 +566,35 @@ div[data-testid="stBorderContainer"] div[data-testid="stPlotlyChart"] > div {
     font-size: var(--fs-chart-desc);
     color: var(--muted);
     margin: 0 0 4px 0;
+}
+
+/* Inputs y selectboxes — colores por tema */
+div[data-testid="stTextInput"] input,
+div[data-testid="stTextInput"] textarea,
+[data-baseweb="input"] input {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+div[data-testid="stTextInput"] input::placeholder,
+[data-baseweb="input"] input::placeholder {
+    color: var(--muted) !important;
+    opacity: 1 !important;
+}
+
+div[data-testid="stSelectbox"] > div[data-baseweb="select"] > div,
+div[data-testid="stSelectbox"] > div[data-baseweb="select"] > div > div,
+[data-baseweb="select"] > div {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-baseweb="select"] [data-testid="stMarkdownContainer"] p,
+[data-baseweb="select"] span,
+[data-baseweb="select"] div[class*="valueContainer"] {
+    color: var(--text) !important;
 }
 
 /* Plotly */

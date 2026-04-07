@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from theme import get_theme_tokens
+from theme import get_theme_mode, get_theme_tokens
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -99,11 +99,31 @@ def apply_user_filters(df: pd.DataFrame) -> pd.DataFrame:
 # =========================================================
 
 def render_css() -> None:
+    mode = get_theme_mode()
     tokens = get_theme_tokens()
     card = tokens.get("surface", tokens.get("card", "#111827"))
     text = tokens.get("text", "#f8fafc")
     text2 = tokens.get("text2", tokens.get("muted", "#94a3b8"))
     border = tokens.get("border", "rgba(148,163,184,0.18)")
+
+    if mode == "light":
+        badges_css = """
+        .badge-twitter  { background: rgba(59,130,246,0.15); color: #1d4ed8; border-color: rgba(59,130,246,0.40); }
+        .badge-youtube  { background: rgba(220,38,38,0.14);  color: #b91c1c; border-color: rgba(220,38,38,0.38); }
+        .badge-positive { background: rgba(22,163,74,0.14);  color: #15803d; border-color: rgba(22,163,74,0.38); }
+        .badge-neutral  { background: rgba(107,114,128,0.14);color: #374151; border-color: rgba(107,114,128,0.35); }
+        .badge-negative { background: rgba(220,38,38,0.14);  color: #b91c1c; border-color: rgba(220,38,38,0.38); }
+        .badge-sector   { background: rgba(180,83,9,0.13);   color: #92400e; border-color: rgba(180,83,9,0.36); }
+        """
+    else:
+        badges_css = """
+        .badge-twitter  { background: rgba(59,130,246,0.12);  color: #60a5fa; border-color: rgba(59,130,246,0.28); }
+        .badge-youtube  { background: rgba(239,68,68,0.12);   color: #f87171; border-color: rgba(239,68,68,0.28); }
+        .badge-positive { background: rgba(34,197,94,0.12);   color: #4ade80; border-color: rgba(34,197,94,0.28); }
+        .badge-neutral  { background: rgba(148,163,184,0.14); color: #cbd5e1; border-color: rgba(148,163,184,0.24); }
+        .badge-negative { background: rgba(239,68,68,0.12);   color: #f87171; border-color: rgba(239,68,68,0.28); }
+        .badge-sector   { background: rgba(245,158,11,0.12);  color: #fbbf24; border-color: rgba(245,158,11,0.26); }
+        """
 
     st.markdown(
         f"""
@@ -167,44 +187,10 @@ def render_css() -> None:
             border-radius: 999px;
             font-size: 0.82rem;
             font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 1px solid transparent;
         }}
 
-        .badge-twitter {{
-            background: rgba(59,130,246,0.12);
-            color: #60a5fa;
-            border-color: rgba(59,130,246,0.28);
-        }}
-
-        .badge-youtube {{
-            background: rgba(239,68,68,0.12);
-            color: #f87171;
-            border-color: rgba(239,68,68,0.28);
-        }}
-
-        .badge-positive {{
-            background: rgba(34,197,94,0.12);
-            color: #4ade80;
-            border-color: rgba(34,197,94,0.28);
-        }}
-
-        .badge-neutral {{
-            background: rgba(148,163,184,0.14);
-            color: #cbd5e1;
-            border-color: rgba(148,163,184,0.24);
-        }}
-
-        .badge-negative {{
-            background: rgba(239,68,68,0.12);
-            color: #f87171;
-            border-color: rgba(239,68,68,0.28);
-        }}
-
-        .badge-sector {{
-            background: rgba(245,158,11,0.12);
-            color: #fbbf24;
-            border-color: rgba(245,158,11,0.26);
-        }}
+        {badges_css}
 
         .comment-text {{
             color: {text};
@@ -360,7 +346,7 @@ def main() -> None:
         st.warning("No se han podido cargar datos para el Explorer.")
         return
 
-    st.title("Explorer")
+    st.title("Explorador de comentarios")
     st.markdown("---")
 
     filtered = apply_user_filters(df)

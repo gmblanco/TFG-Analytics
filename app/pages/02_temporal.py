@@ -658,7 +658,7 @@ def main() -> None:
     st.markdown(
         """
         <div class="page-wrap">
-            <div class="section-tag">02 · Evolución temporal · H1</div>
+            <div class="section-tag">02 · EVOLUCIÓN TEMPORAL</div>
             <h1 class="section-title">El punto de inflexión</h1>
             <p class="section-subtitle">
                 Evolución mensual del sentimiento en ambas plataformas. ChatGPT marca un antes

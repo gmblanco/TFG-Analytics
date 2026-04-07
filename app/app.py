@@ -9,6 +9,14 @@ ASSETS_DIR = BASE_DIR / "assets"
 
 init_page_config()
 init_theme_state()
+
+# Precarga de datos en caché para que la navegación entre páginas sea instantánea
+try:
+    from data_loader import load_twitter_opinion, load_youtube_sentiment
+    load_twitter_opinion()
+    load_youtube_sentiment()
+except Exception:
+    pass
 inject_global_css(ASSETS_DIR / "style.css")
 
 render_sidebar_brand()

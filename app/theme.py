@@ -12,13 +12,13 @@ COLORS = {
     "text2_dark": "#d4d4d8",
     "muted_dark": "#a1a1aa",
     "bg_light": "#f0f0ed",
-    "surface_light": "#f7f7f5",
+    "surface_light": "#ffffff",
     "surface2_light": "#eaeae7",
     "border_light": "#ddddd9",
     "border2_light": "#ccccc8",
     "text_light": "#0a0a0a",
-    "text2_light": "#3f3f46",
-    "muted_light": "#71717a",
+    "text2_light": "#27272a",
+    "muted_light": "#52525b",
     "accent": "#f59e0b",
     "accent2": "#fbbf24",
     "negative": "#ef4444",
@@ -113,9 +113,15 @@ def get_theme_tokens() -> dict:
     }
 
 
+@st.cache_data(show_spinner=False)
+def _read_css(path_str: str) -> str:
+    return Path(path_str).read_text(encoding="utf-8")
+
+
 def inject_global_css(css_path: Path) -> None:
+    mode = get_theme_mode()
     tokens = get_theme_tokens()
-    css = css_path.read_text(encoding="utf-8")
+    css = _read_css(str(css_path))
 
     token_css = f"""
     <style>
@@ -130,6 +136,9 @@ def inject_global_css(css_path: Path) -> None:
         --muted: {tokens["muted"]};
         --accent: {COLORS["accent"]};
         --accent2: {COLORS["accent2"]};
+        --tag-color: {"#e53935" if mode == "light" else COLORS["accent"]};
+        --insight-bg: {"rgba(245,158,11,0.10)" if mode == "light" else "rgba(245,158,11,0.05)"};
+        --insight-border: {"rgba(245,158,11,0.32)" if mode == "light" else "rgba(245,158,11,0.16)"};
         --neg: {COLORS["negative"]};
         --neu: {COLORS["neutral"]};
         --pos: {COLORS["positive"]};
@@ -139,6 +148,11 @@ def inject_global_css(css_path: Path) -> None:
     </style>
     """
 
+    st.markdown(
+        '<link rel="preconnect" href="https://fonts.googleapis.com">'
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+        unsafe_allow_html=True,
+    )
     st.markdown(token_css, unsafe_allow_html=True)
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
@@ -182,7 +196,7 @@ def render_sidebar_brand() -> None:
             """
             <div class="sidebar-brand">
                 <div class="logo-tag">TFG · 2025-2026</div>
-                <div class="logo-title">Percepción de la IA</div>
+                <div class="logo-title">PERCEPCIÓN PÚBLICA DE LA IA</div>
                 <div class="logo-sub">Twitter & YouTube · NLP</div>
             </div>
             """,
