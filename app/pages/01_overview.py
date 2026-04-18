@@ -1,3 +1,4 @@
+import base64
 from pathlib import Path
 
 import plotly.graph_objects as go
@@ -10,20 +11,133 @@ from theme import (
     get_theme_tokens,
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-ASSETS_DIR = BASE_DIR / "assets"
+LOGOS_DIR = Path(__file__).resolve().parent.parent / "assets" / "logos"
 
 _SENT_COLORS = [COLORS["negative"], COLORS["neutral"], COLORS["positive"]]
 _SENT_LABELS = ["Negativo", "Neutral", "Positivo"]
-_SENT_KEYS = ["negative", "neutral", "positive"]
+_SENT_KEYS   = ["negative", "neutral", "positive"]
+
+COLOR_TW     = "#111111"
+COLOR_YT     = "#FF0000"
+COLOR_ACCENT = "#F59E0B"
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _img_b64(path: Path):
+    if path and path.exists():
+        with open(path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    return None
+
+
+def _logo_src(path: Path):
+    b64 = _img_b64(path)
+    if not b64:
+        return None
+    ext  = path.suffix.lstrip(".").lower()
+    mime = "image/svg+xml" if ext == "svg" else "image/" + ext
+    return "data:" + mime + ";base64," + b64
+
+
+def _logo_img(path: Path, size: int = 38, top_offset: int = -2) -> str:
+    src = _logo_src(path)
+    sz  = str(size) + "px"
+    if src:
+        return (
+            '<img src="' + src + '" style="'
+            'width:' + sz + ';height:' + sz + ';'
+            'object-fit:contain;display:block;flex-shrink:0;'
+            'position:relative;top:' + str(top_offset) + 'px;" />'
+        )
+    return '<div style="width:' + sz + ';height:' + sz + ';flex-shrink:0;"></div>'
+
+
+def _kpi_card(
+    title: str,
+    logo_path: Path,
+    main_value: str,
+    sub_value: str,
+    accent: str,
+    value_size: str = "28px",
+    logo_top_offset: int = -2,
+) -> str:
+    logo = _logo_img(logo_path, top_offset=logo_top_offset)
+
+    text_shift = "20px" if sub_value else "0px"
+
+    sub_html = ""
+    if sub_value:
+        sub_html = (
+            '<div style="'
+            'font-family:monospace;font-size:14px;color:#111111;margin-top:3px;text-align:left;'
+            '">' + sub_value + '</div>'
+        )
+
+    return (
+        '<div style="'
+        'background:var(--surface);'
+        'border:1px solid var(--border);'
+        'border-radius:12px;'
+        'padding:12px 10px;'
+        'display:flex;'
+        'flex-direction:column;'
+        'gap:8px;'
+        'box-sizing:border-box;'
+        'min-height:108px;'
+        '">'
+
+        # título centrado
+        '<div style="'
+        'font-family:Manrope,sans-serif;'
+        'font-size:13px;'
+        'font-weight:800;'
+        'letter-spacing:0.14em;'
+        'text-transform:uppercase;'
+        'color:var(--text2);'
+        'text-align:center;'
+        'width:100%;'
+        '">' + title + '</div>'
+
+        # fila logo izq + contenido der
+        '<div style="'
+        'display:flex;'
+        'flex-direction:row;'
+        'align-items:center;'
+        'justify-content:flex-start;'
+        'gap:10px;'
+        'width:100%;'
+        'padding-left:10px;'
+        'box-sizing:border-box;'
+        '">'
+        + logo +
+        '<div style="'
+        'display:flex;'
+        'flex-direction:column;'
+        'justify-content:center;'
+        'align-items:flex-start;'
+        'min-width:0;'
+        'margin-left:' + text_shift + ';'
+        '">'
+        '<div style="'
+        'font-family:sans-serif;'
+        'font-size:' + value_size + ';'
+        'font-weight:700;'
+        'line-height:1.1;'
+        'color:' + accent + ';'
+        'white-space:nowrap;text-align:left;'
+        '">' + main_value + '</div>'
+        + sub_html +
+        '</div>'
+        '</div>'
+
+        '</div>'
+    )
+
 
 def _sentiment_donut(counts: dict, center: str) -> go.Figure:
     tokens = get_theme_tokens()
-    vals = [counts.get(k, 0) for k in _SENT_KEYS]
-
+    vals   = [counts.get(k, 0) for k in _SENT_KEYS]
     fig = go.Figure(go.Pie(
         labels=_SENT_LABELS,
         values=vals,
@@ -31,69 +145,47 @@ def _sentiment_donut(counts: dict, center: str) -> go.Figure:
         marker=dict(colors=_SENT_COLORS, line=dict(color="rgba(0,0,0,0)", width=0)),
         textinfo="percent",
         textposition="inside",
-        textfont=dict(
-            size=14,
-            family="Geist Mono, monospace",
-            color="white",
-        ),
+        textfont=dict(size=14, family="Geist Mono, monospace", color="white"),
         direction="clockwise",
         sort=False,
     ))
-
     layout = {**PLOTLY_BASE_LAYOUT}
     layout.update(
         height=320,
         margin=dict(l=8, r=8, t=8, b=8),
         showlegend=True,
         legend=dict(
-            orientation="h",
-            yanchor="top",
-            y=-0.04,
-            xanchor="center",
-            x=0.5,
+            orientation="h", yanchor="top", y=-0.04, xanchor="center", x=0.5,
             font=dict(size=11, family="Geist Mono, monospace", color=tokens["text2"]),
         ),
         annotations=[dict(
-            text=center,
-            x=0.5, y=0.5,
+            text=center, x=0.5, y=0.5, showarrow=False,
             font=dict(size=18, family="Space Grotesk, sans-serif", color=tokens["text"]),
-            showarrow=False,
         )],
     )
     fig.update_layout(**layout)
     return fig
 
 
-def _kpi(label: str, value: str, detail: str, cls: str) -> str:
-    return (
-        f'<div class="kpi-card {cls}">'
-        f'<div class="kpi-label">{label}</div>'
-        f'<div class="kpi-value kpi-val-{cls.split()[0][4:]}">{value}</div>'
-        f'<div class="kpi-detail">{detail}</div>'
-        f'</div>'
-    )
-
-
-# ── Page ─────────────────────────────────────────────────────────────────────
+# ── Page ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    # ── Data ─────────────────────────────────────────────────────────────────
+
+    # ── Data ──────────────────────────────────────────────────────────────────
     tw = load_twitter_opinion()
     yt = load_youtube_sentiment()
 
-    tw_sent = tw["sentiment_label_hf"].value_counts().to_dict()
-    yt_sent = yt["sentiment_label"].value_counts().to_dict()
-    tw_total = len(tw)
-    yt_total = len(yt)
-
+    tw_sent     = tw["sentiment_label_hf"].value_counts().to_dict()
+    yt_sent     = yt["sentiment_label"].value_counts().to_dict()
+    tw_total    = len(tw)
+    yt_total    = len(yt)
     tw_year_min = int(tw["date"].dt.year.min())
     tw_year_max = int(tw["date"].dt.year.max())
     yt_year_max = int(yt["comment_year"].max())
+    neg_yt_pct  = yt_sent.get("negative", 0) / yt_total * 100
+    neu_tw_pct  = tw_sent.get("neutral",  0) / tw_total * 100
 
-    neg_yt_pct = yt_sent.get("negative", 0) / yt_total * 100
-    neu_tw_pct = tw_sent.get("neutral", 0) / tw_total * 100
-
-    # ── Header ───────────────────────────────────────────────────────────────
+    # ── Header ────────────────────────────────────────────────────────────────
     st.markdown(
         """
         <div class="page-wrap">
@@ -109,44 +201,76 @@ def main() -> None:
     )
 
     # ── KPI row ───────────────────────────────────────────────────────────────
-    c1, c2, c3, c4 = st.columns(4)
+    _, c1, c2, c3, c4, _ = st.columns([0.22, 1, 1, 1, 1, 0.22])
+
     with c1:
         st.markdown(
-            _kpi("Twitter", f"{tw_total:,}",
-                 f"tweets sin URL · {tw_year_min}–{tw_year_max}", "kpi-tw"),
+            '<div style="margin-bottom:-4px;">' +
+            _kpi_card(
+                title=str(tw_year_min) + " \u2013 " + str(tw_year_max),
+                logo_path=LOGOS_DIR / "twitter_logo.png",
+                main_value=f"{tw_total:,}",
+                sub_value="tweets sin URL",
+                accent=COLOR_TW,
+                value_size="30px",
+                logo_top_offset=-12,
+            ) + '</div>',
             unsafe_allow_html=True,
         )
     with c2:
         st.markdown(
-            _kpi("YouTube", f"{yt_total:,}",
-                 f"comentarios · 2020–{yt_year_max}", "kpi-yt"),
+            '<div style="margin-bottom:-4px;">' +
+            _kpi_card(
+                title="2020 \u2013 " + str(yt_year_max),
+                logo_path=LOGOS_DIR / "youtube_logo.png",
+                main_value=f"{yt_total:,}",
+                sub_value="comentarios",
+                accent=COLOR_YT,
+                value_size="30px",
+                logo_top_offset=-12,
+            ) + '</div>',
             unsafe_allow_html=True,
         )
     with c3:
         st.markdown(
-            _kpi("Modelo NLP", "XLM-RoBERTa",
-                 "cardiffnlp · sentiment", "kpi-accent"),
+            '<div style="margin-bottom:-4px;">' +
+            _kpi_card(
+                title="Modelo NLP",
+                logo_path=LOGOS_DIR / "cardiffnlp_logo.png",
+                main_value="XLM-RoBERTa",
+                sub_value="",
+                accent=COLOR_ACCENT,
+                value_size="22px",
+                logo_top_offset=-2,
+            ) + '</div>',
             unsafe_allow_html=True,
         )
     with c4:
         st.markdown(
-            _kpi("Período total", f"{tw_year_min}–{yt_year_max}",
-                 f"{tw_year_min}–{tw_year_max} Twitter · 2020–{yt_year_max} YouTube",
-                 "kpi-accent"),
+            '<div style="margin-bottom:-4px;">' +
+            _kpi_card(
+                title="Periodo total",
+                logo_path=LOGOS_DIR / "timeline.png",
+                main_value=str(tw_year_min) + " - " + str(yt_year_max),
+                sub_value="",
+                accent=COLOR_ACCENT,
+                value_size="26px",
+                logo_top_offset=-2,
+            ) + '</div>',
             unsafe_allow_html=True,
         )
 
-    st.markdown("<div style='height:1.4rem'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:0.45rem'></div>", unsafe_allow_html=True)
 
-    # ── Donut charts ─────────────────────────────────────────────────────────
+    # ── Donut charts ──────────────────────────────────────────────────────────
     col_tw, col_yt = st.columns(2)
 
     with col_tw:
         with st.container(border=True):
             st.markdown(
-                f'<p class="chart-title">Sentimiento global — Twitter</p>'
-                f'<p class="chart-desc">Solo tweets sin URL · señal de opinión directa'
-                f' (n={tw_total:,})</p>',
+                '<p class="chart-title">Sentimiento global \u2014 Twitter</p>'
+                '<p class="chart-desc">Solo tweets sin URL \u00b7 se\u00f1al de opini\u00f3n directa'
+                ' (n=' + f"{tw_total:,}" + ')</p>',
                 unsafe_allow_html=True,
             )
             st.plotly_chart(
@@ -155,13 +279,12 @@ def main() -> None:
                 config={"displayModeBar": False},
                 theme=None,
             )
-
     with col_yt:
         with st.container(border=True):
             st.markdown(
-                f'<p class="chart-title">Sentimiento global — YouTube</p>'
-                f'<p class="chart-desc">Comentarios con ≥10 palabras'
-                f' (n={yt_total:,})</p>',
+                '<p class="chart-title">Sentimiento global \u2014 YouTube</p>'
+                '<p class="chart-desc">Comentarios con \u226510 palabras'
+                ' (n=' + f"{yt_total:,}" + ')</p>',
                 unsafe_allow_html=True,
             )
             st.plotly_chart(
@@ -173,14 +296,12 @@ def main() -> None:
 
     # ── Insight ───────────────────────────────────────────────────────────────
     st.markdown(
-        f"""
-        <div class="insight-box">
-            <strong>Hallazgo central:</strong> Twitter (pre-ChatGPT) muestra un sentimiento
-            dominado por la neutralidad ({neu_tw_pct:.1f}%), mientras YouTube (que cubre la
-            era post-ChatGPT) invierte la proporción con un {neg_yt_pct:.1f}% de negatividad.
-            El contraste revela un cambio de paradigma en la percepción pública.
-        </div>
-        """,
+        '<div class="insight-box">'
+        '<strong>Hallazgo central:</strong> Twitter (pre-ChatGPT) muestra un sentimiento '
+        'dominado por la neutralidad (' + f"{neu_tw_pct:.1f}" + '%), mientras YouTube (que cubre la '
+        'era post-ChatGPT) invierte la proporci\u00f3n con un ' + f"{neg_yt_pct:.1f}" + '% de negatividad. '
+        'El contraste revela un cambio de paradigma en la percepci\u00f3n p\u00fablica.'
+        '</div>',
         unsafe_allow_html=True,
     )
 
@@ -188,43 +309,28 @@ def main() -> None:
 
     # ── Hypothesis cards ──────────────────────────────────────────────────────
     st.markdown(
-        '<div class="section-tag" style="margin-bottom:14px">Hipótesis de trabajo</div>',
+        '<div class="section-tag" style="margin-bottom:14px">Hip\u00f3tesis de trabajo</div>',
         unsafe_allow_html=True,
     )
-
     st.markdown(
         """
         <div class="hyp-grid">
             <div class="hyp-card">
-                <h4>Evolución hacia la negatividad</h4>
-                <p>La percepción pasa de neutral-curiosa a dominantemente negativa. ChatGPT
-                (nov 2022) actúa como catalizador visible, no como causa única.</p>
+                <h4>Evoluci&#243;n hacia la negatividad</h4>
+                <p>La percepci&#243;n pasa de neutral-curiosa a dominantemente negativa. ChatGPT
+                (nov 2022) act&#250;a como catalizador visible, no como causa &#250;nica.</p>
             </div>
             <div class="hyp-card">
-                <h4>Diferenciación por sectores</h4>
-                <p>Empleo concentra 60.9% de negatividad. Educación es genuinamente
-                ambivalente: la tutoría IA genera esperanza, pero el sistema institucional
+                <h4>Diferenciaci&#243;n por sectores</h4>
+                <p>Empleo concentra 60.9% de negatividad. Educaci&#243;n es genuinamente
+                ambivalente: la tutor&#237;a IA genera esperanza, pero el sistema institucional
                 genera miedo.</p>
             </div>
             <div class="hyp-card">
-                <h4>Diferenciación por plataforma</h4>
-                <p>Las plataformas difieren, pero no como se esperaba. YouTube no es más
-                equilibrado: la mayor extensión amplifica la negatividad, no la mitiga.</p>
+                <h4>Diferenciaci&#243;n por plataforma</h4>
+                <p>Las plataformas difieren, pero no como se esperaba. YouTube no es m&#225;s
+                equilibrado: la mayor extensi&#243;n amplifica la negatividad, no la mitiga.</p>
             </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # ── Method note ───────────────────────────────────────────────────────────
-    st.markdown(
-        """
-        <div class="method-note">
-            <strong>Decisión metodológica clave:</strong> El 86% de los tweets contienen
-            URLs y son actos de difusión (sharing), no de opinión. Su sentimiento es ~75%
-            neutral. Se filtran para aislar la señal real (14% restante → 123&nbsp;389 tweets).
-            Modelo: <code>cardiffnlp/twitter-xlm-roberta-base-sentiment</code> aplicado en
-            ambas plataformas para garantizar comparabilidad.
         </div>
         """,
         unsafe_allow_html=True,
