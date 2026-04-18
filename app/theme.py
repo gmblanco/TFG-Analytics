@@ -71,7 +71,7 @@ def init_page_config() -> None:
 
 def init_theme_state() -> None:
     if "theme_mode" not in st.session_state:
-        st.session_state.theme_mode = "dark"
+        st.session_state.theme_mode = "light"
 
 
 def get_theme_mode() -> str:
@@ -207,7 +207,7 @@ def render_sidebar_brand() -> None:
 def render_sidebar_toggle() -> None:
     with st.sidebar:
         if "theme_mode_toggle" not in st.session_state:
-            st.session_state.theme_mode_toggle = get_theme_mode() == "dark"
+            st.session_state.theme_mode_toggle = False
 
         st.toggle(
             "Modo oscuro",
