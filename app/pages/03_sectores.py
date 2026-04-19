@@ -9,10 +9,8 @@ from theme import COLORS, PLOTLY_BASE_LAYOUT, get_theme_tokens
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pre-computed topic data · notebook 09 · embedding-based (all-MiniLM-L6-v2)
-# Filter: sector_*=True ∩ sentiment ∈ {pos, neg} ∩ n_palabras_clean ≥ 8
-# ─────────────────────────────────────────────────────────────────────────────
+# Topics pre-calculados en notebook 09 (all-MiniLM-L6-v2, umbral 0.30)
+# Filtro: sector_*=True, sentiment ∈ {pos, neg}, n_palabras_clean ≥ 8
 
 _EDU_TOPICS = [
     {"label": "School policy",       "neg": 953,  "pos": 118, "total": 1071, "pct_neg": 89.0, "pct_pos": 11.0},
@@ -38,27 +36,34 @@ _SECTOR_META = {
     "education": {
         "topics": _EDU_TOPICS,
         "insight": (
-            "<strong>Educación — tensión genuina:</strong> "
-            "\"AI tutoring tool\" es el único topic con mayoría positiva (68.5%). "
-            "Sin embargo, \"School policy\" (89% neg), \"Academic dishonesty\" (89% neg) "
-            "y \"Critical thinking\" (86% neg) revelan un miedo profundo al impacto "
-            "institucional. La esperanza es puntual; el miedo es sistémico."
+            "<div style='line-height:1.45;'>"
+            "<div style='font-weight:700; font-size:1.08rem; color:#d97706; margin-bottom:10px;'>Educación</div>"
+            "<strong style='color:#111827;'>AI tutoring tool</strong> es el único topic en el que predominan los comentarios positivos (68.5%). "
+            "En cambio, temas como <strong style='color:#111827;'>School policy</strong> (89% negativo), "
+            "<strong style='color:#111827;'>Academic dishonesty</strong> (89% negativo) y "
+            "<strong style='color:#111827;'>Critical thinking</strong> (86% negativo) concentran una percepción mucho más crítica."
+            "<br>"
+            "Por tanto, los resultados muestran que en educación la IA genera preocupación en el plano institucional, "
+            "aunque también se reconoce su utilidad como apoyo al aprendizaje."
+            "</div>"
         ),
     },
     "employment": {
         "topics": _EMP_TOPICS,
         "insight": (
-            "<strong>Empleo — negatividad dominante:</strong> "
-            "\"Job displacement\" concentra 2.281 comentarios negativos (93% del topic). "
-            "Incluso topics aparentemente esperanzadores como \"New AI jobs\" tienen 64% "
-            "de negatividad: la percepción de nueva creación de empleo es escéptica. "
-            "Solo \"Human-AI collaboration\" (33% positivo) muestra algo de optimismo real."
+            "<div style='line-height:1.45;'>"
+            "<div style='font-weight:700; font-size:1.08rem; color:#d97706; margin-bottom:10px;'>Empleo</div>"
+            "<strong style='color:#111827;'>Job displacement</strong> es el topic con mayor volumen de comentarios negativos, con 2.281 registros "
+            "y un 93% de negatividad dentro del propio tema. "
+            "Además, incluso topics que en principio podrían asociarse a oportunidades, como "
+            "<strong style='color:#111827;'>New AI jobs</strong>, mantienen un tono mayoritariamente negativo (64%)."
+            "<br>"
+            "Esto sugiere que, en el ámbito laboral, la IA se percibe sobre todo como una amenaza más que como una oportunidad."
+            "</div>"
         ),
     },
 }
 
-
-# ── Data ──────────────────────────────────────────────────────────────────────
 
 @st.cache_data(show_spinner=False)
 def _sector_kpis() -> dict:
@@ -88,9 +93,7 @@ def _sector_kpis() -> dict:
     return result
 
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
-
-def _inject_sectores_css() -> None:
+def _inject_css() -> None:
     st.markdown(
         """
         <style>
@@ -130,10 +133,6 @@ def _inject_sectores_css() -> None:
         button[role="tab"]::after,
         button[role="tab"]::before { display: none !important; }
 
-        /* Neutral KPI (not in global CSS) */
-        .kpi-neu::before { background: var(--neu) !important; }
-        .kpi-val-neu     { color: var(--neu) !important; }
-
         .chart-title {
             margin: 0 0 0.18rem 0;
             font-size: 1.08rem;
@@ -149,68 +148,81 @@ def _inject_sectores_css() -> None:
         }
         div[data-testid="stPlotlyChart"] { margin-top: 0.15rem; }
 
-                div[data-testid="stBorderContainer"] {
+        div[data-testid="stBorderContainer"] {
             background: var(--surface) !important;
             border: 1px solid var(--border) !important;
             border-radius: 12px !important;
             padding: 20px 20px 8px !important;
         }
-
         div[data-testid="stBorderContainer"] > div {
             background: transparent !important;
         }
-
         div[data-testid="stBorderContainer"] div[data-testid="stPlotlyChart"],
         div[data-testid="stBorderContainer"] div[data-testid="stPlotlyChart"] > div {
             background: transparent !important;
         }
-
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
 def _is_dark_theme(bg_value: str) -> bool:
-    bg_lower = str(bg_value).lower()
     dark_candidates = {
         "#000", "#000000", "#09090b", "#0b0f19", "#0f1117", "#111827", "#0e1117",
     }
-    return bg_lower in dark_candidates or "rgb(0" in bg_lower
+    return str(bg_value).lower() in dark_candidates or "rgb(0" in str(bg_value).lower()
 
 
-def _kpi(label: str, value: str, detail: str, cls: str) -> str:
+_SENTIMENT_COLORS = {
+    "neg": "#EF4444",
+    "pos": "#22C55E",
+    "neu": "#94A3B8",
+}
+
+
+def _kpi_card(label: str, value: str, detail: str, cls: str) -> str:
     suffix = cls.split()[0][4:]
+    accent = _SENTIMENT_COLORS.get(suffix, "#94A3B8")
     return (
-        f'<div class="kpi-card {cls}">'
-        f'<div class="kpi-label">{label}</div>'
-        f'<div class="kpi-value kpi-val-{suffix}">{value}</div>'
-        f'<div class="kpi-detail">{detail}</div>'
-        f'</div>'
+        '<div style="'
+        'background:var(--surface);border:1px solid var(--border);'
+        'border-radius:12px;padding:12px 24px;display:flex;'
+        'flex-direction:column;gap:6px;box-sizing:border-box;">'
+
+        '<div style="font-family:Manrope,sans-serif;font-size:13px;font-weight:800;'
+        'letter-spacing:0.14em;text-transform:uppercase;color:var(--text2);'
+        'text-align:center;width:100%;">' + label + '</div>'
+
+        '<div style="font-family:sans-serif;font-size:28px;font-weight:700;'
+        'line-height:1.1;color:' + accent + ';text-align:center;">' + value + '</div>'
+
+        '<div style="font-family:monospace;font-size:13px;color:var(--text2);'
+        'text-align:center;margin-top:2px;">' + detail + '</div>'
+
+        '</div>'
     )
 
 
-# ── Charts ────────────────────────────────────────────────────────────────────
-
-def _fears_chart(topics: list[dict]) -> go.Figure:
+def _chart_theme_vars() -> dict:
     tokens = get_theme_tokens()
-    bg      = tokens.get("bg", "#ffffff")
-    muted   = tokens.get("muted", "#667085")
-    text2   = tokens.get("text2", "#667085")
-    border2 = tokens.get("border2", "rgba(148,163,184,0.35)")
-    is_dark = _is_dark_theme(bg)
+    is_dark = _is_dark_theme(tokens.get("bg", "#ffffff"))
+    return {
+        "muted":      tokens.get("muted", "#667085"),
+        "text2":      tokens.get("text2", "#667085"),
+        "border2":    tokens.get("border2", "rgba(148,163,184,0.35)"),
+        "hover_bg":   "rgba(255,255,255,0.98)" if not is_dark else "rgba(17,24,39,0.98)",
+        "hover_font": "#111827" if not is_dark else "#F9FAFB",
+        "grid_color": "rgba(148,163,184,0.16)" if not is_dark else "rgba(148,163,184,0.10)",
+    }
 
-    hover_bg   = "rgba(255,255,255,0.98)" if not is_dark else "rgba(17,24,39,0.98)"
-    hover_font = "#111827" if not is_dark else "#F9FAFB"
-    grid_color = "rgba(148,163,184,0.16)" if not is_dark else "rgba(148,163,184,0.10)"
 
-    sorted_t = sorted(topics, key=lambda x: x["neg"])
-    labels   = [t["label"] for t in sorted_t]
-    neg_vals = [t["neg"] for t in sorted_t]
-    pct_negs = [t["pct_neg"] for t in sorted_t]
-    max_val  = max(neg_vals)
+def _bar_chart_negative(sector_topics: list[dict]) -> go.Figure:
+    t = _chart_theme_vars()
+    sorted_topics = sorted(sector_topics, key=lambda x: x["neg"])
+    labels   = [item["label"]   for item in sorted_topics]
+    neg_vals = [item["neg"]     for item in sorted_topics]
+    pct_neg  = [item["pct_neg"] for item in sorted_topics]
 
     fig = go.Figure(go.Bar(
         y=labels,
@@ -219,73 +231,47 @@ def _fears_chart(topics: list[dict]) -> go.Figure:
         marker=dict(color=COLORS["negative"], line=dict(width=0)),
         text=[f"{n:,}" for n in neg_vals],
         textposition="outside",
-        textfont=dict(
-            family="Geist Mono, monospace",
-            size=11,
-            color=COLORS["negative"]
-        ),
+        textfont=dict(family="Geist Mono, monospace", size=11, color=COLORS["negative"]),
         cliponaxis=False,
-        customdata=pct_negs,
+        customdata=pct_neg,
         hovertemplate=(
             "<b>%{y}</b><br>"
             "Comentarios negativos: %{x:,}<br>"
-            "Peso negativo dentro del topic: %{customdata:.1f}%"
+            "Peso dentro del topic: %{customdata:.1f}%"
             "<extra></extra>"
         ),
     ))
 
     layout = {**PLOTLY_BASE_LAYOUT}
     layout.update(
-        height=320,
-        showlegend=False,
+        height=320, showlegend=False,
         margin=dict(l=28, r=70, t=8, b=16),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         hoverlabel=dict(
-            bgcolor=hover_bg,
-            bordercolor=border2,
-            font=dict(color=hover_font, family="Geist, sans-serif", size=13),
+            bgcolor=t["hover_bg"], bordercolor=t["border2"],
+            font=dict(color=t["hover_font"], family="Geist, sans-serif", size=13),
         ),
         xaxis=dict(
-            title=None,
-            showgrid=True,
-            gridcolor=grid_color,
-            zeroline=False,
-            fixedrange=True,
-            range=[0, max_val * 1.35],
-            tickfont=dict(family="Geist Mono, monospace", size=10, color=muted),
+            title=None, showgrid=True, gridcolor=t["grid_color"],
+            zeroline=False, fixedrange=True, range=[0, max(neg_vals) * 1.35],
+            tickfont=dict(family="Geist Mono, monospace", size=10, color=t["muted"]),
         ),
         yaxis=dict(
-            title=None,
-            showgrid=False,
-            zeroline=False,
-            automargin=True,
-            fixedrange=True,
-            ticklabelstandoff=18,
-            tickfont=dict(family="Geist, sans-serif", size=14, color=text2),
+            title=None, showgrid=False, zeroline=False,
+            automargin=True, fixedrange=True, ticklabelstandoff=18,
+            tickfont=dict(family="Geist, sans-serif", size=14, color=t["text2"]),
         ),
     )
     fig.update_layout(**layout)
     return fig
 
 
-def _hopes_chart(topics: list[dict]) -> go.Figure:
-    tokens = get_theme_tokens()
-    bg      = tokens.get("bg", "#ffffff")
-    muted   = tokens.get("muted", "#667085")
-    text2   = tokens.get("text2", "#667085")
-    border2 = tokens.get("border2", "rgba(148,163,184,0.35)")
-    is_dark = _is_dark_theme(bg)
-
-    hover_bg   = "rgba(255,255,255,0.98)" if not is_dark else "rgba(17,24,39,0.98)"
-    hover_font = "#111827" if not is_dark else "#F9FAFB"
-    grid_color = "rgba(148,163,184,0.16)" if not is_dark else "rgba(148,163,184,0.10)"
-
-    sorted_t = sorted(topics, key=lambda x: x["pos"])
-    labels   = [t["label"] for t in sorted_t]
-    pos_vals = [t["pos"] for t in sorted_t]
-    pct_poss = [t["pct_pos"] for t in sorted_t]
-    max_val  = max(pos_vals)
+def _bar_chart_positive(sector_topics: list[dict]) -> go.Figure:
+    t = _chart_theme_vars()
+    sorted_topics = sorted(sector_topics, key=lambda x: x["pos"])
+    labels   = [item["label"]   for item in sorted_topics]
+    pos_vals = [item["pos"]     for item in sorted_topics]
+    pct_pos  = [item["pct_pos"] for item in sorted_topics]
 
     fig = go.Figure(go.Bar(
         y=labels,
@@ -294,215 +280,127 @@ def _hopes_chart(topics: list[dict]) -> go.Figure:
         marker=dict(color=COLORS["positive"], line=dict(width=0)),
         text=[f"{n:,}" for n in pos_vals],
         textposition="outside",
-        textfont=dict(
-            family="Geist Mono, monospace",
-            size=11,
-            color=COLORS["positive"]
-        ),
+        textfont=dict(family="Geist Mono, monospace", size=11, color=COLORS["positive"]),
         cliponaxis=False,
-        customdata=pct_poss,
+        customdata=pct_pos,
         hovertemplate=(
             "<b>%{y}</b><br>"
             "Comentarios positivos: %{x:,}<br>"
-            "Peso positivo dentro del topic: %{customdata:.1f}%"
+            "Peso dentro del topic: %{customdata:.1f}%"
             "<extra></extra>"
         ),
     ))
 
     layout = {**PLOTLY_BASE_LAYOUT}
     layout.update(
-        height=320,
-        showlegend=False,
+        height=320, showlegend=False,
         margin=dict(l=28, r=70, t=8, b=16),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         hoverlabel=dict(
-            bgcolor=hover_bg,
-            bordercolor=border2,
-            font=dict(color=hover_font, family="Geist, sans-serif", size=13),
+            bgcolor=t["hover_bg"], bordercolor=t["border2"],
+            font=dict(color=t["hover_font"], family="Geist, sans-serif", size=13),
         ),
         xaxis=dict(
-            title=None,
-            showgrid=True,
-            gridcolor=grid_color,
-            zeroline=False,
-            fixedrange=True,
-            range=[0, max_val * 1.35],
-            tickfont=dict(family="Geist Mono, monospace", size=10, color=muted),
+            title=None, showgrid=True, gridcolor=t["grid_color"],
+            zeroline=False, fixedrange=True, range=[0, max(pos_vals) * 1.35],
+            tickfont=dict(family="Geist Mono, monospace", size=10, color=t["muted"]),
         ),
         yaxis=dict(
-            title=None,
-            showgrid=False,
-            zeroline=False,
-            automargin=True,
-            fixedrange=True,
-            ticklabelstandoff=18,
-            tickfont=dict(family="Geist, sans-serif", size=14, color=text2),
+            title=None, showgrid=False, zeroline=False,
+            automargin=True, fixedrange=True, ticklabelstandoff=18,
+            tickfont=dict(family="Geist, sans-serif", size=14, color=t["text2"]),
         ),
     )
     fig.update_layout(**layout)
     return fig
 
 
-def _composition_chart(topics: list[dict]) -> go.Figure:
-    tokens = get_theme_tokens()
-    bg      = tokens.get("bg", "#ffffff")
-    muted   = tokens.get("muted", "#667085")
-    text2   = tokens.get("text2", "#667085")
-    border2 = tokens.get("border2", "rgba(148,163,184,0.35)")
-    is_dark = _is_dark_theme(bg)
+def _bar_chart_composition(sector_topics: list[dict]) -> go.Figure:
+    t = _chart_theme_vars()
+    sorted_topics = sorted(sector_topics, key=lambda x: x["pct_neg"])
+    labels   = [item["label"]   for item in sorted_topics]
+    neg_pcts = [item["pct_neg"] for item in sorted_topics]
+    pos_pcts = [item["pct_pos"] for item in sorted_topics]
 
-    hover_bg   = "rgba(255,255,255,0.98)" if not is_dark else "rgba(17,24,39,0.98)"
-    hover_font = "#111827" if not is_dark else "#F9FAFB"
-
-    sorted_t = sorted(topics, key=lambda x: x["pct_neg"])
-    labels   = [t["label"] for t in sorted_t]
-    neg_pcts = [t["pct_neg"] for t in sorted_t]
-    pos_pcts = [t["pct_pos"] for t in sorted_t]
-
-    neg_text = [f"{v:.0f}%" if v >= 9 else "" for v in neg_pcts]
-    pos_text = [f"{v:.0f}%" if v >= 9 else "" for v in pos_pcts]
+    neg_labels = [f"{v:.0f}%" if v >= 9 else "" for v in neg_pcts]
+    pos_labels = [f"{v:.0f}%" if v >= 9 else "" for v in pos_pcts]
 
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
         name="Negativo",
-        y=labels,
-        x=neg_pcts,
-        orientation="h",
-        marker=dict(
-            color=COLORS["negative"],
-            line=dict(width=0),
-        ),
-        text=neg_text,
-        textposition="inside",
-        insidetextanchor="end",
-        textfont=dict(
-            family="Geist Mono, monospace",
-            size=14,
-            color="white"
-        ),
+        y=labels, x=neg_pcts, orientation="h",
+        marker=dict(color=COLORS["negative"], line=dict(width=0)),
+        text=neg_labels, textposition="inside", insidetextanchor="end",
+        textfont=dict(family="Geist Mono, monospace", size=14, color="white"),
         texttemplate="%{text}  ",
         customdata=pos_pcts,
         hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Negativo: %{x:.1f}%<br>"
-            "Positivo: %{customdata:.1f}%"
-            "<extra></extra>"
+            "<b>%{y}</b><br>Negativo: %{x:.1f}%<br>Positivo: %{customdata:.1f}%<extra></extra>"
         ),
     ))
 
     fig.add_trace(go.Bar(
         name="Positivo",
-        y=labels,
-        x=pos_pcts,
-        orientation="h",
-        marker=dict(
-            color=COLORS["positive"],
-            line=dict(width=0),
-        ),
-        text=pos_text,
-        textposition="inside",
-        insidetextanchor="end",
-        textfont=dict(
-            family="Geist Mono, monospace",
-            size=14,
-            color="white"
-        ),
+        y=labels, x=pos_pcts, orientation="h",
+        marker=dict(color=COLORS["positive"], line=dict(width=0)),
+        text=pos_labels, textposition="inside", insidetextanchor="end",
+        textfont=dict(family="Geist Mono, monospace", size=14, color="white"),
         customdata=neg_pcts,
         hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Positivo: %{x:.1f}%<br>"
-            "Negativo: %{customdata:.1f}%"
-            "<extra></extra>"
+            "<b>%{y}</b><br>Positivo: %{x:.1f}%<br>Negativo: %{customdata:.1f}%<extra></extra>"
         ),
     ))
-    
+
     layout = {**PLOTLY_BASE_LAYOUT}
     layout.update(
-        barmode="stack",
-        bargap=0.2,
-        barcornerradius= 1,
-        height=400,
-        margin=dict(l=28, r=26, t=10, b=44),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        barmode="stack", bargap=0.2, barcornerradius=1,
+        height=400, margin=dict(l=28, r=26, t=10, b=44),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         hoverlabel=dict(
-            bgcolor=hover_bg,
-            bordercolor=border2,
-            font=dict(color=hover_font, family="Geist, sans-serif", size=13),
+            bgcolor=t["hover_bg"], bordercolor=t["border2"],
+            font=dict(color=t["hover_font"], family="Geist, sans-serif", size=13),
         ),
         xaxis=dict(
-            ticksuffix="%",
-            range=[0, 101],
-            showgrid=False,
-            zeroline=False,
-            fixedrange=True,
-            tickfont=dict(
-                family="Geist Mono, monospace",
-                size=10,
-                color=muted
-            ),
+            ticksuffix="%", range=[0, 101], showgrid=False,
+            zeroline=False, fixedrange=True,
+            tickfont=dict(family="Geist Mono, monospace", size=10, color=t["muted"]),
         ),
         yaxis=dict(
-            title=None,
-            showgrid=False,
-            zeroline=False,
-            automargin=True,
-            fixedrange=True,
-            ticklabelstandoff=20,
-            tickfont=dict(
-                family="Geist, sans-serif",
-                size=15,
-                color=text2
-            ),
+            title=None, showgrid=False, zeroline=False,
+            automargin=True, fixedrange=True, ticklabelstandoff=20,
+            tickfont=dict(family="Geist, sans-serif", size=15, color=t["text2"]),
         ),
         legend=dict(
-            orientation="h",
-            yanchor="top",
-            y=-0.12,
-            xanchor="center",
-            x=0.5,
+            orientation="h", yanchor="top", y=-0.12, xanchor="center", x=0.5,
             bgcolor="rgba(0,0,0,0)",
-            font=dict(
-                family="Geist Mono, monospace",
-                size=11,
-                color=text2
-            ),
+            font=dict(family="Geist Mono, monospace", size=11, color=t["text2"]),
             itemsizing="constant",
         ),
     )
-
     fig.update_layout(**layout)
     return fig
 
 
-# ── Page ──────────────────────────────────────────────────────────────────────
-
 def main() -> None:
-    _inject_sectores_css()
+    _inject_css()
 
-    # ── Header ───────────────────────────────────────────────────────────────
     st.markdown(
         """
         <div class="page-wrap">
             <div class="section-tag">03 · ANÁLISIS SECTORIAL</div>
-            <h1 class="section-title">Miedos y esperanzas</h1>
+            <h1 class="section-title">Comparativa sectorial</h1>
             <p class="section-subtitle">
-                El impacto percibido de la IA no es homogéneo. El sector del empleo concentra
-                los mayores miedos; el educativo revela una tensión genuina entre oportunidad
-                y amenaza.
+                Esta sección compara cómo se percibe la IA en educación y empleo, identificando las diferencias de sentimiento y los temas que concentran mayor rechazo o valoración positiva.
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ── Data ─────────────────────────────────────────────────────────────────
-    kpis = _sector_kpis()
-    glb  = kpis["global"]
+    kpis        = _sector_kpis()
+    global_kpis = kpis["global"]
 
-    # ── Sector tabs ───────────────────────────────────────────────────────────
     tab_edu, tab_emp = st.tabs(["Educación", "Empleo"])
 
     for tab, sector_key, sector_name in [
@@ -510,72 +408,60 @@ def main() -> None:
         (tab_emp, "employment", "Empleo"),
     ]:
         with tab:
-            kpi    = kpis[sector_key]
-            meta   = _SECTOR_META[sector_key]
-            topics = meta["topics"]
+            kpi           = kpis[sector_key]
+            meta          = _SECTOR_META[sector_key]
+            sector_topics = meta["topics"]
 
-            total_neg = sum(t["neg"] for t in topics)
-            total_pos = sum(t["pos"] for t in topics)
+            total_neg = sum(t["neg"] for t in sector_topics)
+            total_pos = sum(t["pos"] for t in sector_topics)
 
-            # ── KPI row ──────────────────────────────────────────────────────
-            c1, c2, c3, c4 = st.columns(4)
+            _, c1, c2, c3, _ = st.columns([0.6, 1, 1, 1, 0.6])
             with c1:
                 st.markdown(
-                    _kpi("% Negativo", f"{kpi['pct_neg']:.1f}%",
-                         f"vs {glb['pct_neg']:.1f}% media YouTube", "kpi-neg"),
+                    _kpi_card("% Negativo", f"{kpi['pct_neg']:.1f}%",
+                              f"vs {global_kpis['pct_neg']:.1f}% media YouTube", "kpi-neg"),
                     unsafe_allow_html=True,
                 )
             with c2:
                 st.markdown(
-                    _kpi("% Positivo", f"{kpi['pct_pos']:.1f}%",
-                         f"vs {glb['pct_pos']:.1f}% media YouTube", "kpi-pos"),
+                    _kpi_card("% Positivo", f"{kpi['pct_pos']:.1f}%",
+                              f"vs {global_kpis['pct_pos']:.1f}% media YouTube", "kpi-pos"),
                     unsafe_allow_html=True,
                 )
             with c3:
                 st.markdown(
-                    _kpi("% Neutral", f"{kpi['pct_neu']:.1f}%",
-                         f"vs {glb['pct_neu']:.1f}% media YouTube", "kpi-neu"),
-                    unsafe_allow_html=True,
-                )
-            with c4:
-                st.markdown(
-                    _kpi("Comentarios", f"{kpi['n']:,}",
-                         "del corpus YouTube", "kpi-accent"),
+                    _kpi_card("% Neutral", f"{kpi['pct_neu']:.1f}%",
+                              f"vs {global_kpis['pct_neu']:.1f}% media YouTube", "kpi-neu"),
                     unsafe_allow_html=True,
                 )
 
             st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
 
-            # ── Fears & Hopes ─────────────────────────────────────────────────
-            col_fears, col_hopes = st.columns(2, gap="medium")
+            col_neg, col_pos = st.columns(2, gap="medium")
 
-            with col_fears:
+            with col_neg:
                 with st.container(border=True):
                     st.markdown(
-                        f'<p class="chart-title">Principales miedos — {sector_name}</p>'
-                        f'<p class="chart-desc">'
-                        f'Topics ordenados por volumen negativo absoluto · '
-                        f'total comentarios negativos: {total_neg:,}</p>',
+                        f'<p class="chart-title">Topics con más rechazo: &nbsp; &nbsp;{sector_name}</p>'
+                        f'<p class="chart-desc">Total de comentarios negativos: {total_neg:,}</p>',
                         unsafe_allow_html=True,
                     )
                     st.plotly_chart(
-                        _fears_chart(topics),
+                        _bar_chart_negative(sector_topics),
                         use_container_width=True,
                         config={"displayModeBar": False},
                         theme=None,
                     )
 
-            with col_hopes:
+            with col_pos:
                 with st.container(border=True):
                     st.markdown(
-                        f'<p class="chart-title">Principales esperanzas — {sector_name}</p>'
-                        f'<p class="chart-desc">'
-                        f'Topics ordenados por volumen positivo absoluto · '
-                        f'total comentarios positivos: {total_pos:,}</p>',
+                        f'<p class="chart-title">Topics con más valoración positiva: &nbsp; &nbsp;{sector_name}</p>'
+                        f'<p class="chart-desc">Total de comentarios positivos: {total_pos:,}</p>',
                         unsafe_allow_html=True,
                     )
                     st.plotly_chart(
-                        _hopes_chart(topics),
+                        _bar_chart_positive(sector_topics),
                         use_container_width=True,
                         config={"displayModeBar": False},
                         theme=None,
@@ -583,50 +469,27 @@ def main() -> None:
 
             st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
-            # ── Composition chart ─────────────────────────────────────────────
             with st.container(border=True):
                 st.markdown(
-                    f'<p class="chart-title">'
-                    f'Composición de sentimiento por topic — {sector_name}</p>'
-                    f'<p class="chart-desc">'
-                    f'% negativo vs % positivo (excluyendo neutrales)'
-                    f'ordenado por negatividad</p>',
+                    f'<p class="chart-title">Composición de sentimiento por topic: &nbsp; &nbsp;{sector_name}</p>'
+                    f'<p class="chart-desc">% negativo vs % positivo (excluyendo neutrales) </p>',
                     unsafe_allow_html=True,
                 )
                 st.plotly_chart(
-                    _composition_chart(topics),
+                    _bar_chart_composition(sector_topics),
                     use_container_width=True,
                     config={"displayModeBar": False},
                     theme=None,
                 )
-            
 
             st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
-            # ── Insight ───────────────────────────────────────────────────────
             st.markdown(
                 f'<div class="insight-box">{meta["insight"]}</div>',
                 unsafe_allow_html=True,
             )
 
     st.markdown("<div style='height:0.75rem'></div>", unsafe_allow_html=True)
-
-    # ── Method note ───────────────────────────────────────────────────────────
-    st.markdown(
-        """
-        <div class="method-note">
-            <strong>Metodología de topics:</strong> Cada comentario se asigna al topic cuya
-            descripción semántica maximiza la similitud coseno con su embedding (modelo
-            <code>all-MiniLM-L6-v2</code>, umbral 0.30). El análisis excluye comentarios
-            neutrales y textos con menos de 8 palabras para aislar señal de opinión clara.
-            Los topics son exclusivos de cada sector.
-            Datos: YouTube · <code>sector_education=True</code> o
-            <code>sector_employment=True</code>.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
 
 if __name__ == "__main__":
     main()

@@ -583,11 +583,9 @@ def main() -> None:
         """
         <div class="page-wrap">
             <div class="section-tag">04 · COMPARATIVA CROSS-PLATFORM</div>
-            <h1 class="section-title">Twitter vs YouTube</h1>
+            <h1 class="section-title">Comparativa de sentimiento por plataforma</h1>
             <p class="section-subtitle">
-                ¿Influye la plataforma en cómo se percibe la IA? Comparación directa entre
-                dos formatos de opinión pública digital. Mismo modelo, misma IA,
-                sentimientos opuestos: Twitter dominado por la neutralidad, YouTube por la negatividad.
+                Se analizan las diferencias entre Twitter y YouTube en la distribución del sentimiento, los sectores estudiados y la longitud de los textos.
             </p>
         </div>
         """,
@@ -770,24 +768,6 @@ def main() -> None:
             )
 
     st.markdown("<div style='height:0.75rem'></div>", unsafe_allow_html=True)
-
-    # ── Method note ───────────────────────────────────────────────────────────
-    st.markdown(
-        """
-        <div class="method-note">
-            <strong>Comparabilidad metodológica:</strong> Ambas plataformas se analizan con el
-            mismo modelo (<code>cardiffnlp/twitter-xlm-roberta-base-sentiment</code>). Twitter
-            incluye únicamente tweets sin URL (14% del corpus total: señal de opinión directa).
-            YouTube filtra comentarios con menos de 10 palabras. Las estadísticas sectoriales
-            de YouTube proceden de la asignación semántica con
-            <code>sector_education=True</code> / <code>sector_employment=True</code>.
-            El período solapado 2020–2021 permite comparación controlada por contexto temporal,
-            aunque el volumen de YouTube en ese período es reducido (n=3,041 vs 22,639 tweets).
-            Percentiles de longitud calculados sobre los corpus filtrados.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 if __name__ == "__main__":
