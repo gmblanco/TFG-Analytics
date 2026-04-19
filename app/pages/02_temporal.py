@@ -659,10 +659,9 @@ def main() -> None:
         """
         <div class="page-wrap">
             <div class="section-tag">02 · EVOLUCIÓN TEMPORAL</div>
-            <h1 class="section-title">El punto de inflexión</h1>
+            <h1 class="section-title">Evolución temporal del sentimiento</h1>
             <p class="section-subtitle">
-                Evolución mensual del sentimiento en ambas plataformas. ChatGPT marca un antes
-                y un después visible en los datos: el negativo supera al positivo y no vuelve a bajar.
+                Evolución mensual del sentimiento en Twitter y YouTube a lo largo del periodo analizado.
             </p>
         </div>
         """,
@@ -675,8 +674,7 @@ def main() -> None:
     with tab_tw:
         with st.container(border=True):
             st.markdown(
-                '<p class="chart-title">Evolución del sentimiento — Twitter (2017–2021)</p>'
-                '<p class="chart-desc">Media móvil suavizada · Hitos tecnológicos anotados</p>',
+                '<p class="chart-title">Evolución del sentimiento - Twitter (2017–2021)</p>',
                 unsafe_allow_html=True,
             )
             st.plotly_chart(
@@ -689,7 +687,7 @@ def main() -> None:
     with tab_yt:
         with st.container(border=True):
             st.markdown(
-                '<p class="chart-title">Evolución del sentimiento — YouTube (2020–2026)</p>'
+                '<p class="chart-title">Evolución del sentimiento - YouTube (2020–2026)</p>'
                 '<p class="chart-desc">Media móvil suavizada · Hitos tecnológicos anotados · Sombreado pre/post ChatGPT</p>',
                 unsafe_allow_html=True,
             )
@@ -709,8 +707,8 @@ def main() -> None:
     with col_tw:
         with st.container(border=True):
             st.markdown(
-                '<p class="chart-title">Evolución anual — Twitter (2017–2021)</p>'
-                '<p class="chart-desc">Tendencia de negatividad creciente ya visible antes de ChatGPT</p>',
+                '<p class="chart-title">Evolución anual - Twitter (2017–2021)</p>'
+                '<p class="chart-desc">Predominio de la neutralidad y aumento gradual del sentimiento negativo</p>',
                 unsafe_allow_html=True,
             )
             st.plotly_chart(
@@ -723,7 +721,7 @@ def main() -> None:
     with col_yt:
         with st.container(border=True):
             st.markdown(
-                '<p class="chart-title">Pre-ChatGPT vs Post-ChatGPT — YouTube</p>'
+                '<p class="chart-title">Pre-ChatGPT vs Post-ChatGPT - YouTube</p>'
                 '<p class="chart-desc">Cambio en la distribución del sentimiento</p>',
                 unsafe_allow_html=True,
             )
@@ -739,31 +737,14 @@ def main() -> None:
     # ── Insight ──────────────────────────────────────────────────────────────
     st.markdown(
         """
-        <div class="insight-box">
-            <strong>H1 confirmada con matiz:</strong> no se observa una polarización simétrica.
-            Lo que aparece en los datos es un desplazamiento dominante hacia la negatividad.
-            En YouTube, el sentimiento negativo pasa del 38.4% al 54.5%, mientras que el positivo
-            cae del 27.3% al 20.5%. En Twitter, la tendencia ya era visible antes de 2022:
-            el negativo sube del 14.8% en 2017 al 22.0% en 2021.
+        <div class="method-note">
+            <strong>Resultado principal:</strong> los datos muestran un desplazamiento progresivo hacia la negatividad. En Twitter, esta tendencia ya se aprecia entre 2017 y 2021, mientras que en YouTube se intensifica claramente en la etapa 2022-2026.
         </div>
         """,
         unsafe_allow_html=True,
     )
 
     st.markdown("<div style='height: 0.65rem;'></div>", unsafe_allow_html=True)
-
-    # ── Method note ──────────────────────────────────────────────────────────
-    st.markdown(
-        """
-        <div class="method-note">
-            <strong>Nota metodológica:</strong> las series mensuales se suavizan con una media móvil
-            centrada de 3 meses (<code>min_periods=2</code>). Solo se incluyen meses con al menos
-            50 textos. El punto de corte temporal se fija en <code>2022-11-01</code>, fecha del
-            lanzamiento público de ChatGPT.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 if __name__ == "__main__":

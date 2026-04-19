@@ -191,10 +191,6 @@ def main() -> None:
         <div class="page-wrap">
             <div class="section-tag">01 · Visión general</div>
             <h1 class="section-title">Visión general del análisis</h1>
-            <p class="section-subtitle">
-                Dos plataformas, nueve años de opinión pública sobre inteligencia artificial.
-                186&nbsp;378 textos analizados con el mismo modelo de NLP para garantizar comparabilidad.
-            </p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -239,7 +235,7 @@ def main() -> None:
                 logo_path=LOGOS_DIR / "cardiffnlp_logo.png",
                 main_value="XLM-RoBERTa",
                 sub_value="",
-                accent=COLOR_ACCENT,
+                accent= COLOR_ACCENT,
                 value_size="22px",
                 logo_top_offset=-2,
             ) + '</div>',
@@ -268,8 +264,8 @@ def main() -> None:
     with col_tw:
         with st.container(border=True):
             st.markdown(
-                '<p class="chart-title">Sentimiento global \u2014 Twitter</p>'
-                '<p class="chart-desc">Solo tweets sin URL \u00b7 se\u00f1al de opini\u00f3n directa'
+                '<p class="chart-title">Sentimiento global - Twitter</p>'
+                '<p class="chart-desc">Solo tweets sin URL '
                 ' (n=' + f"{tw_total:,}" + ')</p>',
                 unsafe_allow_html=True,
             )
@@ -282,9 +278,8 @@ def main() -> None:
     with col_yt:
         with st.container(border=True):
             st.markdown(
-                '<p class="chart-title">Sentimiento global \u2014 YouTube</p>'
-                '<p class="chart-desc">Comentarios con \u226510 palabras'
-                ' (n=' + f"{yt_total:,}" + ')</p>',
+                '<p class="chart-title">Sentimiento global - YouTube</p>'
+                '<p class="chart-desc">Total comentarios (n=' + f"{yt_total:,}" + ')</p>',
                 unsafe_allow_html=True,
             )
             st.plotly_chart(
@@ -297,10 +292,9 @@ def main() -> None:
     # ── Insight ───────────────────────────────────────────────────────────────
     st.markdown(
         '<div class="insight-box">'
-        '<strong>Hallazgo central:</strong> Twitter (pre-ChatGPT) muestra un sentimiento '
-        'dominado por la neutralidad (' + f"{neu_tw_pct:.1f}" + '%), mientras YouTube (que cubre la '
-        'era post-ChatGPT) invierte la proporci\u00f3n con un ' + f"{neg_yt_pct:.1f}" + '% de negatividad. '
-        'El contraste revela un cambio de paradigma en la percepci\u00f3n p\u00fablica.'
+        '<strong>Hallazgo central:</strong> Los resultados muestran un cambio claro en el discurso público sobre la IA.'
+        ' Mientras Twitter (2017-2021) está dominado por la neutralidad (' + f"{neu_tw_pct:.1f}" + '%), en YouTube (2020-2026) predomina '
+        'la negatividad (' + f"{neg_yt_pct:.1f}" + '%). '
         '</div>',
         unsafe_allow_html=True,
     )
@@ -309,27 +303,23 @@ def main() -> None:
 
     # ── Hypothesis cards ──────────────────────────────────────────────────────
     st.markdown(
-        '<div class="section-tag" style="margin-bottom:14px">Hip\u00f3tesis de trabajo</div>',
+        '<div class="section-tag" style="margin-bottom:14px">Claves del análisis</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
         """
         <div class="hyp-grid">
             <div class="hyp-card">
-                <h4>Evoluci&#243;n hacia la negatividad</h4>
-                <p>La percepci&#243;n pasa de neutral-curiosa a dominantemente negativa. ChatGPT
-                (nov 2022) act&#250;a como catalizador visible, no como causa &#250;nica.</p>
+                <h4>Evolución del sentimiento</h4>
+                <p>Entre 2017 y 2026, el discurso sobre IA se desplaza desde la neutralidad hacia una visión más crítica, con un cambio más visible a partir de 2022.</p>
             </div>
             <div class="hyp-card">
                 <h4>Diferenciaci&#243;n por sectores</h4>
-                <p>Empleo concentra 60.9% de negatividad. Educaci&#243;n es genuinamente
-                ambivalente: la tutor&#237;a IA genera esperanza, pero el sistema institucional
-                genera miedo.</p>
+                <p>El empleo concentra la mayor negatividad, mientras que la educación presenta una percepción más ambivalente, entre la preocupación y la utilidad práctica.</p>
             </div>
             <div class="hyp-card">
-                <h4>Diferenciaci&#243;n por plataforma</h4>
-                <p>Las plataformas difieren, pero no como se esperaba. YouTube no es m&#225;s
-                equilibrado: la mayor extensi&#243;n amplifica la negatividad, no la mitiga.</p>
+                <h4>Contraste entre plataformas</h4>
+                <p>Twitter recoge una conversación más neutra en la etapa 2017-2021, mientras que YouTube refleja un tono más crítico en 2020-2026. </p>
             </div>
         </div>
         """,
